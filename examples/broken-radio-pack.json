@@ -1,0 +1,50 @@
+{
+  "name": "BROKEN RADIO PACK",
+  "presets": [
+    {
+      "pos": 0,
+      "name": "WALKIE TALKIE",
+      "comment": "bandpass filter + distortion for radio effect",
+      "list": [
+        { "effect": "HIGHPASS", "cutoff": 0.3 },
+        { "effect": "LOWPASS", "cutoff": 0.4 },
+        { "effect": "DIST", "amount": 15.0, "mix": 0.6, "lowpass-cutoff": 0.8, "highpass-cutoff": 0.2 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "handle": { "row": 1, "param": "cutoff", "depth": 0.5 }
+    },
+    {
+      "pos": 1,
+      "name": "AM RADIO",
+      "comment": "ring modulation for AM effect",
+      "list": [
+        { "effect": "LOWPASS", "cutoff": 0.35 },
+        { "effect": "RING", "frequency": 800, "mix": 0.4 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 0.9, "balance": 0.5 }
+      ],
+      "shake": { "row": 1, "param": "frequency", "depth": 0.6 }
+    },
+    {
+      "pos": 2,
+      "name": "INTERFERENCE",
+      "comment": "heavy static and noise",
+      "list": [
+        { "effect": "HIGHPASS", "cutoff": 0.5 },
+        { "effect": "DIST", "amount": 35.0, "mix": 0.8, "lowpass-cutoff": 0.5, "highpass-cutoff": 0.3 },
+        { "effect": "RING", "frequency": 2000, "mix": 0.3 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 0.7, "balance": 0.5 }
+      ]
+    },
+    {
+      "pos": 3,
+      "name": "SHORTWAVE",
+      "comment": "ssb frequency shift",
+      "list": [
+        { "effect": "SSB", "frequency": 150 },
+        { "effect": "LOWPASS", "cutoff": 0.4 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "handle": { "row": 0, "param": "frequency", "depth": 0.8 }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ting-preset-editor",
+  "version": "1.0.0",
+  "description": "Preset editor for Teenage Engineering EP-2350 Ting microphone",
+  "scripts": {
+    "start": "npx serve -l 8080",
+    "stop": "lsof -ti:8080 | xargs kill -9 2>/dev/null || true"
+  },
+  "keywords": ["teenage-engineering", "ting", "audio", "preset"],
+  "license": "MIT"
+}

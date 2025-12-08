@@ -1,0 +1,50 @@
+{
+  "name": "MYSTERIOUS PACK",
+  "presets": [
+    {
+      "pos": 0,
+      "name": "GHOST CHOIR",
+      "comment": "pitch shifted reverb wash",
+      "list": [
+        { "effect": "HARMONY", "pitch": 0.75, "dry-level": 0.3 },
+        { "effect": "REVERB", "time": 0.8, "wet-level": 0.7, "dry-level": 0.4, "spring-mix": 0.2, "highpass-cutoff": 0.1 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "lfo": { "row": 0, "param": "pitch", "depth": 0.15, "shape": "sine", "speed": 0.5 }
+    },
+    {
+      "pos": 1,
+      "name": "UNDERWATER",
+      "comment": "deep lowpass with delay",
+      "list": [
+        { "effect": "LOWPASS", "cutoff": 0.25 },
+        { "effect": "DELAY", "time": 0.4, "echo": 0.6, "wet-level": 0.5, "dry-level": 0.8, "lowpass-cutoff": 0.3, "highpass-cutoff": 0, "cross-feed": 0.3 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "handle": { "row": 0, "param": "cutoff", "depth": 0.5 }
+    },
+    {
+      "pos": 2,
+      "name": "ALIEN SIGNAL",
+      "comment": "ssb modulation with ring",
+      "list": [
+        { "effect": "SSB", "frequency": 500 },
+        { "effect": "RING", "frequency": 300, "mix": 0.5 },
+        { "effect": "DELAY", "time": 0.15, "echo": 0.7, "wet-level": 0.4, "dry-level": 0.8, "lowpass-cutoff": 0.6, "highpass-cutoff": 0.2, "cross-feed": 0.5 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 0.9, "balance": 0.5 }
+      ],
+      "lfo": { "row": 0, "param": "frequency", "depth": 0.4, "shape": "random", "speed": 3 }
+    },
+    {
+      "pos": 3,
+      "name": "PHANTOM VOICE",
+      "comment": "ethereal reverb",
+      "list": [
+        { "effect": "HIGHPASS", "cutoff": 0.2 },
+        { "effect": "REVERB", "time": 0.95, "wet-level": 0.85, "dry-level": 0.2, "spring-mix": 0, "highpass-cutoff": 0.15 },
+        { "effect": "BALANCE", "balance": 0.5 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ]
+    }
+  ]
+}

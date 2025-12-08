@@ -1,0 +1,51 @@
+{
+  "name": "DUB PACK",
+  "presets": [
+    {
+      "pos": 0,
+      "name": "CLASSIC DUB",
+      "comment": "tape delay with spring reverb",
+      "list": [
+        { "effect": "DELAY", "time": 0.375, "echo": 0.55, "wet-level": 0.45, "dry-level": 1, "lowpass-cutoff": 0.6, "highpass-cutoff": 0.1, "cross-feed": 0.2 },
+        { "effect": "REVERB", "time": 0.4, "wet-level": 0.3, "dry-level": 1, "spring-mix": 0.7, "highpass-cutoff": 0.05 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "handle": { "row": 0, "param": "echo", "depth": 0.4 },
+      "shake": { "row": 0, "param": "time", "depth": 0.2 }
+    },
+    {
+      "pos": 1,
+      "name": "SIRENS",
+      "comment": "modulated delay feedback",
+      "list": [
+        { "effect": "DELAY", "time": 0.25, "echo": 0.75, "wet-level": 0.6, "dry-level": 0.8, "lowpass-cutoff": 0.8, "highpass-cutoff": 0, "cross-feed": 0.4 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "lfo": { "row": 0, "param": "time", "depth": 0.3, "shape": "sawtooth", "speed": 2 },
+      "trigger": { "row": 0 }
+    },
+    {
+      "pos": 2,
+      "name": "DEEP BASS",
+      "comment": "sub frequencies with delay",
+      "list": [
+        { "effect": "LOWPASS", "cutoff": 0.2 },
+        { "effect": "HARMONY", "pitch": 0.5, "dry-level": 0.5 },
+        { "effect": "DELAY", "time": 0.5, "echo": 0.4, "wet-level": 0.3, "dry-level": 1, "lowpass-cutoff": 0.4, "highpass-cutoff": 0, "cross-feed": 0 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ]
+    },
+    {
+      "pos": 3,
+      "name": "SPACE ECHO",
+      "comment": "long delays into reverb",
+      "list": [
+        { "effect": "DELAY", "time": 0.8, "echo": 0.6, "wet-level": 0.5, "dry-level": 0.9, "lowpass-cutoff": 0.7, "highpass-cutoff": 0.05, "cross-feed": 0.3 },
+        { "effect": "REVERB", "time": 0.7, "wet-level": 0.5, "dry-level": 0.8, "spring-mix": 0.3, "highpass-cutoff": 0.1 },
+        { "effect": "BALANCE", "balance": 0.5 },
+        { "effect": "SAMPLE", "speed": 1, "pitch": 0, "level": 1, "balance": 0.5 }
+      ],
+      "handle": { "row": 1, "param": "wet-level", "depth": 0.5 }
+    }
+  ]
+}

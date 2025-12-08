@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ting preset editor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__left">
+        <h1 class="header__title">ting preset editor</h1>
+        <input
+          type="text"
+          class="header__pack-name"
+          id="packName"
+          value="MY PACK"
+          placeholder="pack name"
+        >
+      </div>
+      <div class="header__right">
+        <label class="btn btn--import">
+          import
+          <input type="file" id="importFile" accept=".json" hidden>
+        </label>
+        <button class="btn btn--primary" id="exportBtn">export</button>
+      </div>
+    </header>
+
+    <!-- Audio Source Selector -->
+    <section class="audio-source">
+      <div class="audio-source__samples">
+        <button class="sample-btn sample-btn--active" data-sample="singing" id="singSampleBtn">singing</button>
+        <button class="sample-btn" data-sample="spoken" id="spokenSampleBtn">spoken</button>
+      </div>
+      <button class="play-btn" id="playBtn">
+        <span class="play-btn__icon" id="playIcon">&#9654;</span>
+        <span class="play-btn__text" id="playText">play</span>
+      </button>
+    </section>
+
+    <!-- Preset Slots -->
+    <section class="preset-slots">
+      <div class="preset-slot preset-slot--active" data-slot="0">
+        <span class="preset-slot__number">1</span>
+        <span class="preset-slot__name" id="slotName0">empty</span>
+        <button class="preset-slot__clear" data-slot="0" title="clear">×</button>
+      </div>
+      <div class="preset-slot" data-slot="1">
+        <span class="preset-slot__number">2</span>
+        <span class="preset-slot__name" id="slotName1">empty</span>
+        <button class="preset-slot__clear" data-slot="1" title="clear">×</button>
+      </div>
+      <div class="preset-slot" data-slot="2">
+        <span class="preset-slot__number">3</span>
+        <span class="preset-slot__name" id="slotName2">empty</span>
+        <button class="preset-slot__clear" data-slot="2" title="clear">×</button>
+      </div>
+      <div class="preset-slot" data-slot="3">
+        <span class="preset-slot__number">4</span>
+        <span class="preset-slot__name" id="slotName3">empty</span>
+        <button class="preset-slot__clear" data-slot="3" title="clear">×</button>
+      </div>
+    </section>
+
+    <!-- Effect Chain Editor -->
+    <section class="editor">
+      <!-- Preset Meta -->
+      <div class="preset-meta">
+        <div class="form-group">
+          <label for="presetName">name</label>
+          <input type="text" id="presetName" placeholder="preset name" class="input">
+        </div>
+        <div class="form-group">
+          <label for="presetComment">comment</label>
+          <input type="text" id="presetComment" placeholder="description" class="input">
+        </div>
+      </div>
+
+      <!-- Effect Chain -->
+      <div class="effect-chain">
+        <h3 class="section-title">effect chain</h3>
+        <div class="effect-list" id="effectList">
+          <!-- Effects will be rendered here -->
+        </div>
+        <button class="btn btn--add" id="addEffectBtn">+ add effect</button>
+      </div>
+
+      <!-- Modulation Panels -->
+      <div class="modulation-panels">
+        <!-- Handle Modulation -->
+        <div class="mod-panel">
+          <div class="mod-panel__header" data-panel="handle">
+            <label class="toggle">
+              <input type="checkbox" id="handleEnabled">
+              <span class="toggle__slider"></span>
+            </label>
+            <span class="mod-panel__title">handle modulation</span>
+            <span class="mod-panel__chevron">&#9660;</span>
+          </div>
+          <div class="mod-panel__content" id="handleContent">
+            <div class="mod-controls">
+              <div class="form-group form-group--inline">
+                <label>target row</label>
+                <select id="handleRow" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>parameter</label>
+                <select id="handleParam" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>depth</label>
+                <input type="number" id="handleDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shake Modulation -->
+        <div class="mod-panel">
+          <div class="mod-panel__header" data-panel="shake">
+            <label class="toggle">
+              <input type="checkbox" id="shakeEnabled">
+              <span class="toggle__slider"></span>
+            </label>
+            <span class="mod-panel__title">shake modulation</span>
+            <span class="mod-panel__chevron">&#9660;</span>
+          </div>
+          <div class="mod-panel__content" id="shakeContent">
+            <div class="mod-controls">
+              <div class="form-group form-group--inline">
+                <label>target row</label>
+                <select id="shakeRow" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>parameter</label>
+                <select id="shakeParam" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>depth</label>
+                <input type="number" id="shakeDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LFO Modulation -->
+        <div class="mod-panel">
+          <div class="mod-panel__header" data-panel="lfo">
+            <label class="toggle">
+              <input type="checkbox" id="lfoEnabled">
+              <span class="toggle__slider"></span>
+            </label>
+            <span class="mod-panel__title">lfo modulation</span>
+            <span class="mod-panel__chevron">&#9660;</span>
+          </div>
+          <div class="mod-panel__content" id="lfoContent">
+            <div class="mod-controls">
+              <div class="form-group form-group--inline">
+                <label>target row</label>
+                <select id="lfoRow" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>parameter</label>
+                <select id="lfoParam" class="select"></select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>depth</label>
+                <input type="number" id="lfoDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
+              </div>
+              <div class="form-group form-group--inline">
+                <label>shape</label>
+                <select id="lfoShape" class="select">
+                  <option value="sine">sine</option>
+                  <option value="square">square</option>
+                  <option value="sawtooth">sawtooth</option>
+                  <option value="random">random</option>
+                </select>
+              </div>
+              <div class="form-group form-group--inline">
+                <label>speed</label>
+                <input type="number" id="lfoSpeed" class="input input--small" value="1" min="0.1" max="20" step="0.1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trigger -->
+        <div class="mod-panel">
+          <div class="mod-panel__header" data-panel="trigger">
+            <label class="toggle">
+              <input type="checkbox" id="triggerEnabled">
+              <span class="toggle__slider"></span>
+            </label>
+            <span class="mod-panel__title">trigger</span>
+            <span class="mod-panel__chevron">&#9660;</span>
+          </div>
+          <div class="mod-panel__content" id="triggerContent">
+            <div class="mod-controls">
+              <div class="form-group form-group--inline">
+                <label>row</label>
+                <select id="triggerRow" class="select"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Effect Picker Modal -->
+    <div class="modal" id="effectModal">
+      <div class="modal__backdrop" id="modalBackdrop"></div>
+      <div class="modal__content">
+        <h3 class="modal__title">add effect</h3>
+        <div class="effect-picker" id="effectPicker">
+          <!-- Effect options will be rendered here -->
+        </div>
+        <button class="btn modal__close" id="modalClose">cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
