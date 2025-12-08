@@ -103,6 +103,8 @@ class AudioEngine {
   }
 
   async loadSample(sampleType) {
+    await this.init();
+
     this.currentSample = sampleType;
     const url = `./${sampleType}.mp3`;
 
@@ -273,18 +275,12 @@ class AudioEngine {
 
     const effectList = presetConfig.list;
 
-    // Find SAMPLE position
-    let sampleIndex = effectList.findIndex(e => e.effect === 'SAMPLE');
-    if (sampleIndex === -1) {
-      sampleIndex = effectList.length; // Treat as if at end
-    }
+    // For preview: process all effects except SAMPLE (which is just a marker)
+    // In typical presets, SAMPLE is at the end and effects before it shape the sound
+    const effectsToProcess = effectList.filter(e => e.effect !== 'SAMPLE');
 
-    // For preview: only effects AFTER sample position affect the audio
-    // Effects before SAMPLE would process mic input on real device
-    const effectsAfterSample = effectList.slice(sampleIndex);
-
-    // Create effect nodes for effects after SAMPLE
-    effectsAfterSample.forEach(config => {
+    // Create effect nodes
+    effectsToProcess.forEach(config => {
       const node = this.createEffect(config);
       if (node) {
         this.effectNodes.push(node);
@@ -327,18 +323,17 @@ class AudioEngine {
     if (!preset || !preset.list) return;
 
     const effectConfig = preset.list[effectIndex];
-    if (!effectConfig) return;
+    if (!effectConfig || effectConfig.effect === 'SAMPLE') return;
 
-    // Find the corresponding node
-    let nodeIndex = -1;
-    const sampleIndex = preset.list.findIndex(e => e.effect === 'SAMPLE');
-
-    if (effectIndex >= sampleIndex || sampleIndex === -1) {
-      // This effect is after SAMPLE, so it's in our chain
-      nodeIndex = effectIndex - (sampleIndex === -1 ? 0 : sampleIndex);
+    // Find the corresponding node index (count non-SAMPLE effects before this one)
+    let nodeIndex = 0;
+    for (let i = 0; i < effectIndex; i++) {
+      if (preset.list[i].effect !== 'SAMPLE') {
+        nodeIndex++;
+      }
     }
 
-    if (nodeIndex < 0 || nodeIndex >= this.effectNodes.length) return;
+    if (nodeIndex >= this.effectNodes.length) return;
 
     const node = this.effectNodes[nodeIndex];
     if (!node) return;
@@ -408,8 +403,9 @@ class AudioEngine {
 
   async play() {
     await this.init();
-    if (!this.player.loaded) {
-      await this.loadSample(this.currentSample);
+    // Always ensure the correct sample is loaded based on app state
+    if (!this.player.loaded || this.currentSample !== appState.selectedSample) {
+      await this.loadSample(appState.selectedSample);
     }
     // Rebuild chain for current preset (in case import happened before init)
     const preset = appState.presets[appState.selectedSlot];
@@ -665,6 +661,7 @@ function initSortable() {
 
       // Rebuild audio chain
       audioEngine.buildChain(preset);
+      saveState();
     }
   });
 }
@@ -677,6 +674,7 @@ function setupEventListeners() {
   // Pack name
   document.getElementById('packName').addEventListener('input', (e) => {
     appState.packName = e.target.value.toUpperCase();
+    saveState();
   });
 
   // Sample selection
@@ -707,11 +705,13 @@ function setupEventListeners() {
     ensurePreset();
     appState.presets[appState.selectedSlot].name = e.target.value.toUpperCase();
     renderPresetSlots();
+    saveState();
   });
 
   document.getElementById('presetComment').addEventListener('input', (e) => {
     ensurePreset();
     appState.presets[appState.selectedSlot].comment = e.target.value;
+    saveState();
   });
 
   // Add effect button
@@ -834,6 +834,7 @@ function selectSlot(index) {
 
   const preset = appState.presets[index];
   audioEngine.buildChain(preset);
+  saveState();
 }
 
 function clearSlot(index) {
@@ -844,15 +845,28 @@ function clearSlot(index) {
     renderPresetEditor();
     audioEngine.buildChain(null);
   }
+  saveState();
 }
 
-function selectSample(sampleType) {
+async function selectSample(sampleType) {
   appState.selectedSample = sampleType;
 
   document.getElementById('singSampleBtn').classList.toggle('sample-btn--active', sampleType === 'singing');
   document.getElementById('spokenSampleBtn').classList.toggle('sample-btn--active', sampleType === 'spoken');
 
-  audioEngine.loadSample(sampleType);
+  // If playing, stop first, load new sample, then restart
+  const wasPlaying = appState.isPlaying;
+  if (wasPlaying) {
+    audioEngine.stop();
+  }
+
+  await audioEngine.loadSample(sampleType);
+
+  if (wasPlaying) {
+    audioEngine.player.start();
+  }
+
+  saveState();
 }
 
 async function togglePlayback() {
@@ -897,6 +911,7 @@ function addEffect(effectName) {
   renderPresetSlots();
 
   audioEngine.buildChain(preset);
+  saveState();
 }
 
 function removeEffect(index) {
@@ -943,6 +958,7 @@ function removeEffect(index) {
   }
 
   audioEngine.buildChain(preset);
+  saveState();
 }
 
 function updateEffectParam(index, param, value) {
@@ -953,6 +969,7 @@ function updateEffectParam(index, param, value) {
 
   // Update audio engine in real-time
   audioEngine.updateParameter(index, param, value);
+  saveState();
 }
 
 function updateHandleModulation() {
@@ -968,6 +985,7 @@ function updateHandleModulation() {
   } else {
     preset.handle = null;
   }
+  saveState();
 }
 
 function updateShakeModulation() {
@@ -983,6 +1001,7 @@ function updateShakeModulation() {
   } else {
     preset.shake = null;
   }
+  saveState();
 }
 
 function updateLfoModulation() {
@@ -1000,6 +1019,7 @@ function updateLfoModulation() {
   } else {
     preset.lfo = null;
   }
+  saveState();
 }
 
 function updateTrigger() {
@@ -1013,6 +1033,7 @@ function updateTrigger() {
   } else {
     preset.trigger = null;
   }
+  saveState();
 }
 
 // =====================================================
@@ -1075,6 +1096,9 @@ function handleImport(e) {
 
       // Rebuild audio chain
       audioEngine.buildChain(appState.presets[0]);
+
+      // Save to localStorage
+      saveState();
 
       showToast('config imported successfully', 'success');
     } catch (err) {
@@ -1150,15 +1174,69 @@ function showToast(message, type = 'info') {
 // INITIALIZATION
 // =====================================================
 
+// =====================================================
+// LOCAL STORAGE PERSISTENCE
+// =====================================================
+
+const STORAGE_KEY = 'ting-preset-editor-state';
+
+function saveState() {
+  const stateToSave = {
+    packName: appState.packName,
+    selectedSlot: appState.selectedSlot,
+    selectedSample: appState.selectedSample,
+    presets: appState.presets
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  } catch (e) {
+    console.warn('Could not save state to localStorage:', e);
+  }
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+
+      if (parsed.packName) appState.packName = parsed.packName;
+      if (typeof parsed.selectedSlot === 'number') appState.selectedSlot = parsed.selectedSlot;
+      if (parsed.selectedSample) appState.selectedSample = parsed.selectedSample;
+      if (parsed.presets) appState.presets = parsed.presets;
+
+      // Update UI with loaded pack name
+      document.getElementById('packName').value = appState.packName;
+
+      return true;
+    }
+  } catch (e) {
+    console.warn('Could not load state from localStorage:', e);
+  }
+  return false;
+}
+
+// =====================================================
+// INITIALIZATION
+// =====================================================
+
 function init() {
+  // Load saved state first
+  loadState();
+
+  // Update sample button UI
+  document.getElementById('singSampleBtn').classList.toggle('sample-btn--active', appState.selectedSample === 'singing');
+  document.getElementById('spokenSampleBtn').classList.toggle('sample-btn--active', appState.selectedSample === 'spoken');
+
   renderEffectPicker();
   renderPresetSlots();
   renderPresetEditor();
   setupEventListeners();
 
-  // Initialize audio engine (but don't start it)
+  // Initialize audio engine and load the saved sample
   audioEngine.init().then(() => {
-    audioEngine.loadSample('singing');
+    audioEngine.loadSample(appState.selectedSample);
   });
 }
 
