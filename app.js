@@ -86,6 +86,12 @@ class AudioEngine {
     this.masterGain = null;
     this.isInitialized = false;
     this.currentSample = 'singing';
+    // Modulation simulation state
+    this.handleActive = false;
+    this.shakeActive = false;
+    this.baseParamValues = {}; // Store original param values for modulation
+    this.lfo = null;
+    this.lfoGain = null;
   }
 
   async init() {
@@ -418,6 +424,167 @@ class AudioEngine {
       this.player.stop();
     }
   }
+
+  // Store base parameter value before modulation
+  storeBaseValue(row, param, value) {
+    const key = `${row}-${param}`;
+    if (!(key in this.baseParamValues)) {
+      this.baseParamValues[key] = value;
+    }
+  }
+
+  getBaseValue(row, param) {
+    const key = `${row}-${param}`;
+    return this.baseParamValues[key];
+  }
+
+  // Apply modulation to a parameter
+  applyModulation(modConfig, depth) {
+    if (!modConfig || modConfig.row === undefined) return;
+
+    const preset = appState.presets[appState.selectedSlot];
+    if (!preset || !preset.list) return;
+
+    const effect = preset.list[modConfig.row];
+    if (!effect) return;
+
+    const param = modConfig.param;
+    const effectDef = EFFECTS[effect.effect];
+    if (!effectDef || !effectDef.params || !effectDef.params[param]) return;
+
+    const paramDef = effectDef.params[param];
+    const currentValue = effect[param] ?? paramDef.default;
+
+    // Store base value if not stored
+    this.storeBaseValue(modConfig.row, param, currentValue);
+    const baseValue = this.getBaseValue(modConfig.row, param);
+
+    // Calculate modulated value
+    const range = paramDef.max - paramDef.min;
+    const modAmount = range * depth * modConfig.depth;
+    const newValue = Math.max(paramDef.min, Math.min(paramDef.max, baseValue + modAmount));
+
+    // Apply to audio engine
+    this.updateParameter(modConfig.row, param, newValue);
+  }
+
+  // Reset parameter to base value
+  resetModulation(modConfig) {
+    if (!modConfig || modConfig.row === undefined) return;
+
+    const baseValue = this.getBaseValue(modConfig.row, modConfig.param);
+    if (baseValue !== undefined) {
+      this.updateParameter(modConfig.row, modConfig.param, baseValue);
+    }
+  }
+
+  // Handle modulation (toggle on/off)
+  setHandleActive(active) {
+    this.handleActive = active;
+    const preset = appState.presets[appState.selectedSlot];
+
+    if (active && preset?.handle) {
+      this.applyModulation(preset.handle, 1.0);
+    } else if (preset?.handle) {
+      this.resetModulation(preset.handle);
+    }
+  }
+
+  // Shake modulation (momentary)
+  setShakeActive(active) {
+    this.shakeActive = active;
+    const preset = appState.presets[appState.selectedSlot];
+
+    if (active && preset?.shake) {
+      this.applyModulation(preset.shake, 1.0);
+    } else if (preset?.shake) {
+      this.resetModulation(preset.shake);
+    }
+  }
+
+  // Start LFO modulation
+  startLfo() {
+    const preset = appState.presets[appState.selectedSlot];
+    if (!preset?.lfo) return;
+
+    this.stopLfo(); // Stop any existing LFO
+
+    const lfoConfig = preset.lfo;
+    const effect = preset.list?.[lfoConfig.row];
+    if (!effect) return;
+
+    const param = lfoConfig.param;
+    const effectDef = EFFECTS[effect.effect];
+    if (!effectDef?.params?.[param]) return;
+
+    const paramDef = effectDef.params[param];
+    const baseValue = effect[param] ?? paramDef.default;
+    this.storeBaseValue(lfoConfig.row, param, baseValue);
+
+    // Create LFO using requestAnimationFrame for simplicity
+    const range = paramDef.max - paramDef.min;
+    const depth = lfoConfig.depth || 0.5;
+    const speed = lfoConfig.speed || 1;
+    const shape = lfoConfig.shape || 'sine';
+
+    let startTime = performance.now();
+
+    const updateLfo = () => {
+      if (!this.lfoActive) return;
+
+      const elapsed = (performance.now() - startTime) / 1000;
+      const phase = elapsed * speed * 2 * Math.PI;
+
+      let modValue;
+      switch (shape) {
+        case 'square':
+          modValue = Math.sin(phase) > 0 ? 1 : -1;
+          break;
+        case 'sawtooth':
+          modValue = ((elapsed * speed) % 1) * 2 - 1;
+          break;
+        case 'random':
+          if (Math.floor(elapsed * speed * 4) !== this._lastRandomStep) {
+            this._lastRandomStep = Math.floor(elapsed * speed * 4);
+            this._randomValue = Math.random() * 2 - 1;
+          }
+          modValue = this._randomValue || 0;
+          break;
+        default: // sine
+          modValue = Math.sin(phase);
+      }
+
+      const modAmount = range * depth * modValue;
+      const newValue = Math.max(paramDef.min, Math.min(paramDef.max, baseValue + modAmount));
+      this.updateParameter(lfoConfig.row, param, newValue);
+
+      this.lfoAnimationFrame = requestAnimationFrame(updateLfo);
+    };
+
+    this.lfoActive = true;
+    this._lastRandomStep = -1;
+    this._randomValue = 0;
+    updateLfo();
+  }
+
+  stopLfo() {
+    this.lfoActive = false;
+    if (this.lfoAnimationFrame) {
+      cancelAnimationFrame(this.lfoAnimationFrame);
+      this.lfoAnimationFrame = null;
+    }
+
+    // Reset LFO parameter to base value
+    const preset = appState.presets[appState.selectedSlot];
+    if (preset?.lfo) {
+      this.resetModulation(preset.lfo);
+    }
+  }
+
+  // Clear stored base values (call when switching presets)
+  clearBaseValues() {
+    this.baseParamValues = {};
+  }
 }
 
 // Global audio engine instance
@@ -427,9 +594,15 @@ const audioEngine = new AudioEngine();
 // UI RENDERING
 // =====================================================
 
+// Display name mapping (internal SAMPLE -> UI "MIC IN")
+function getEffectDisplayName(effectName) {
+  return effectName === 'SAMPLE' ? 'MIC IN' : effectName;
+}
+
 function renderEffectCard(effectConfig, index) {
   const effectDef = EFFECTS[effectConfig.effect];
   const isSample = effectConfig.effect === 'SAMPLE';
+  const displayName = getEffectDisplayName(effectConfig.effect);
 
   let paramsHtml = '';
 
@@ -462,15 +635,20 @@ function renderEffectCard(effectConfig, index) {
     }).join('');
   }
 
+  // MIC IN (SAMPLE) cannot be deleted
+  const deleteBtn = isSample
+    ? ''
+    : `<button class="effect-card__delete" data-index="${index}" title="remove">×</button>`;
+
   return `
     <div class="effect-card ${isSample ? 'effect-card--sample' : ''}" data-index="${index}">
       <div class="effect-card__header">
         <div class="effect-card__left">
           <span class="effect-card__drag">&#9776;</span>
           <span class="effect-card__row">${index}</span>
-          <span class="effect-card__name">${effectConfig.effect}</span>
+          <span class="effect-card__name">${displayName}</span>
         </div>
-        <button class="effect-card__delete" data-index="${index}" title="remove">×</button>
+        ${deleteBtn}
       </div>
       ${paramsHtml ? `<div class="effect-card__params">${paramsHtml}</div>` : ''}
     </div>
@@ -486,9 +664,16 @@ function renderEffectList() {
     return;
   }
 
+  // Check if only MIC IN exists (no additional effects)
+  const hasOnlyMicIn = preset.list.length === 1 && preset.list[0].effect === 'SAMPLE';
+
   effectList.innerHTML = preset.list.map((effect, index) =>
     renderEffectCard(effect, index)
   ).join('');
+
+  if (hasOnlyMicIn) {
+    effectList.innerHTML += '<div class="effect-list--hint">add effects above to process the audio</div>';
+  }
 
   // Initialize SortableJS
   initSortable();
@@ -513,15 +698,37 @@ function renderPresetEditor() {
 
   renderEffectList();
   renderModulationPanels();
+  updateModulationButtons();
+}
+
+function updateModulationButtons() {
+  const preset = appState.presets[appState.selectedSlot];
+  const handleBtn = document.getElementById('handleSimBtn');
+  const shakeBtn = document.getElementById('shakeSimBtn');
+
+  // Show disabled state if no modulation configured
+  // Check if handle/shake exists and has both row and param defined
+  const hasHandle = preset?.handle != null && preset.handle.row !== undefined && preset.handle.param;
+  const hasShake = preset?.shake != null && preset.shake.row !== undefined && preset.shake.param;
+
+  handleBtn.classList.toggle('mod-sim-btn--disabled', !hasHandle);
+  shakeBtn.classList.toggle('mod-sim-btn--disabled', !hasShake);
+
+  handleBtn.title = hasHandle
+    ? `handle: ${preset.handle.param} on row ${preset.handle.row}`
+    : 'no handle modulation configured';
+  shakeBtn.title = hasShake
+    ? `shake: ${preset.shake.param} on row ${preset.shake.row}`
+    : 'no shake modulation configured';
 }
 
 function renderModulationPanels() {
   const preset = appState.presets[appState.selectedSlot];
   const effectList = preset?.list || [];
 
-  // Populate row selectors
+  // Populate row selectors (use display names)
   const rowOptions = effectList.map((e, i) =>
-    `<option value="${i}">${i}: ${e.effect}</option>`
+    `<option value="${i}">${i}: ${getEffectDisplayName(e.effect)}</option>`
   ).join('');
 
   ['handle', 'shake', 'lfo', 'trigger'].forEach(modType => {
@@ -617,10 +824,11 @@ function updateParamOptions(modType, rowIndex) {
 
 function renderEffectPicker() {
   const picker = document.getElementById('effectPicker');
-  const effectNames = Object.keys(EFFECTS);
+  // Exclude SAMPLE from picker - it's auto-added and required
+  const effectNames = Object.keys(EFFECTS).filter(name => name !== 'SAMPLE');
 
   picker.innerHTML = effectNames.map(name => `
-    <div class="effect-picker__item ${name === 'SAMPLE' ? 'effect-picker__item--sample' : ''}" data-effect="${name}">
+    <div class="effect-picker__item" data-effect="${name}">
       ${name}
     </div>
   `).join('');
@@ -680,6 +888,40 @@ function setupEventListeners() {
   // Sample selection
   document.getElementById('singSampleBtn').addEventListener('click', () => selectSample('singing'));
   document.getElementById('spokenSampleBtn').addEventListener('click', () => selectSample('spoken'));
+
+  // Modulation simulation buttons
+  const handleBtn = document.getElementById('handleSimBtn');
+  const shakeBtn = document.getElementById('shakeSimBtn');
+
+  // Handle - toggle on/off
+  handleBtn.addEventListener('click', () => {
+    const isActive = handleBtn.classList.toggle('mod-sim-btn--active');
+    audioEngine.setHandleActive(isActive);
+  });
+
+  // Shake - momentary (active while pressed)
+  shakeBtn.addEventListener('mousedown', () => {
+    shakeBtn.classList.add('mod-sim-btn--active');
+    audioEngine.setShakeActive(true);
+  });
+  shakeBtn.addEventListener('mouseup', () => {
+    shakeBtn.classList.remove('mod-sim-btn--active');
+    audioEngine.setShakeActive(false);
+  });
+  shakeBtn.addEventListener('mouseleave', () => {
+    shakeBtn.classList.remove('mod-sim-btn--active');
+    audioEngine.setShakeActive(false);
+  });
+  // Touch support for shake
+  shakeBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    shakeBtn.classList.add('mod-sim-btn--active');
+    audioEngine.setShakeActive(true);
+  });
+  shakeBtn.addEventListener('touchend', () => {
+    shakeBtn.classList.remove('mod-sim-btn--active');
+    audioEngine.setShakeActive(false);
+  });
 
   // Play/Stop
   document.getElementById('playBtn').addEventListener('click', togglePlayback);
@@ -819,10 +1061,17 @@ function setupEventListeners() {
 
 function ensurePreset() {
   if (!appState.presets[appState.selectedSlot]) {
+    // Create new preset with MIC IN (SAMPLE) as default - it's required
+    const sampleDef = EFFECTS.SAMPLE;
+    const sampleConfig = { effect: 'SAMPLE' };
+    Object.entries(sampleDef.params).forEach(([param, def]) => {
+      sampleConfig[param] = def.default;
+    });
+
     appState.presets[appState.selectedSlot] = {
       name: '',
       comment: '',
-      list: []
+      list: [sampleConfig]
     };
   }
 }
@@ -832,8 +1081,22 @@ function selectSlot(index) {
   renderPresetSlots();
   renderPresetEditor();
 
+  // Reset modulation state
+  audioEngine.clearBaseValues();
+  audioEngine.stopLfo();
+  audioEngine.setHandleActive(false);
+  audioEngine.setShakeActive(false);
+  document.getElementById('handleSimBtn').classList.remove('mod-sim-btn--active');
+  document.getElementById('shakeSimBtn').classList.remove('mod-sim-btn--active');
+
   const preset = appState.presets[index];
   audioEngine.buildChain(preset);
+
+  // Restart LFO if playing
+  if (appState.isPlaying) {
+    audioEngine.startLfo();
+  }
+
   saveState();
 }
 
@@ -876,12 +1139,14 @@ async function togglePlayback() {
 
   if (appState.isPlaying) {
     audioEngine.stop();
+    audioEngine.stopLfo();
     appState.isPlaying = false;
     playBtn.classList.remove('play-btn--playing');
     playIcon.innerHTML = '&#9654;';
     playText.textContent = 'play';
   } else {
     await audioEngine.play();
+    audioEngine.startLfo(); // Start LFO if configured
     appState.isPlaying = true;
     playBtn.classList.add('play-btn--playing');
     playIcon.innerHTML = '&#9632;';
@@ -904,6 +1169,17 @@ function addEffect(effectName) {
     });
   }
 
+  // Ensure MIC IN (SAMPLE) exists - add at end if missing
+  const hasSample = preset.list.some(e => e.effect === 'SAMPLE');
+  if (!hasSample) {
+    const sampleDef = EFFECTS.SAMPLE;
+    const sampleConfig = { effect: 'SAMPLE' };
+    Object.entries(sampleDef.params).forEach(([param, def]) => {
+      sampleConfig[param] = def.default;
+    });
+    preset.list.push(sampleConfig);
+  }
+
   preset.list.push(effectConfig);
 
   renderEffectList();
@@ -917,6 +1193,9 @@ function addEffect(effectName) {
 function removeEffect(index) {
   const preset = appState.presets[appState.selectedSlot];
   if (!preset || !preset.list) return;
+
+  // Prevent removing MIC IN (SAMPLE) - it's required
+  if (preset.list[index]?.effect === 'SAMPLE') return;
 
   preset.list.splice(index, 1);
 
@@ -985,6 +1264,7 @@ function updateHandleModulation() {
   } else {
     preset.handle = null;
   }
+  updateModulationButtons();
   saveState();
 }
 
@@ -1001,6 +1281,7 @@ function updateShakeModulation() {
   } else {
     preset.shake = null;
   }
+  updateModulationButtons();
   saveState();
 }
 
@@ -1077,10 +1358,23 @@ function handleImport(e) {
       config.presets.forEach((preset) => {
         const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
         if (pos >= 0 && pos < 4) {
+          let list = preset.list || [];
+
+          // Ensure MIC IN (SAMPLE) exists - add at end if missing
+          const hasSample = list.some(e => e.effect === 'SAMPLE');
+          if (!hasSample) {
+            const sampleDef = EFFECTS.SAMPLE;
+            const sampleConfig = { effect: 'SAMPLE' };
+            Object.entries(sampleDef.params).forEach(([param, def]) => {
+              sampleConfig[param] = def.default;
+            });
+            list.push(sampleConfig);
+          }
+
           appState.presets[pos] = {
             name: preset.name || '',
             comment: preset.comment || '',
-            list: preset.list || [],
+            list: list,
             handle: preset.handle || null,
             shake: preset.shake || null,
             lfo: preset.lfo || null,

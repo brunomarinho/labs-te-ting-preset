@@ -172,6 +172,51 @@ body {
   background: var(--light-gray);
 }
 
+.audio-source__controls {
+  display: flex;
+  gap: 8px;
+}
+
+.mod-sim-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  min-width: 70px;
+}
+
+.mod-sim-btn:hover {
+  border-color: var(--black);
+}
+
+.mod-sim-btn--active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--white);
+}
+
+.mod-sim-btn__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.mod-sim-btn__label {
+  font-size: 10px;
+  text-transform: lowercase;
+}
+
+.mod-sim-btn--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .play-btn {
   display: flex;
   align-items: center;
@@ -395,6 +440,14 @@ body {
   border: 1px dashed var(--border);
   padding: 32px;
   margin-bottom: 12px;
+}
+
+.effect-list--hint {
+  color: var(--mid-gray);
+  font-size: 13px;
+  text-align: center;
+  padding: 12px;
+  margin-top: 8px;
 }
 
 /* Effect Card */
@@ -781,6 +834,15 @@ body {
 
   .audio-source__samples {
     width: 100%;
+  }
+
+  .audio-source__controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mod-sim-btn {
+    flex: 1;
   }
 
   .sample-btn {
