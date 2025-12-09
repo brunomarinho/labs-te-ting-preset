@@ -1,4 +1,4 @@
-import { EFFECTS, getEffectDisplayName } from './effects.js';
+import { EFFECTS, getEffectDisplayName, SINGLE_INSTANCE_EFFECTS } from './effects.js';
 import { appState } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
@@ -135,8 +135,8 @@ export function updateModulationButtons() {
   const hasHandle = preset?.handle != null && preset.handle.row !== undefined && preset.handle.param;
   const hasShake = preset?.shake != null && preset.shake.row !== undefined && preset.shake.param;
 
-  handleBtn.classList.toggle('mod-sim-btn--disabled', !hasHandle);
-  shakeBtn.classList.toggle('mod-sim-btn--disabled', !hasShake);
+  handleBtn.classList.toggle('btn--mod-disabled', !hasHandle);
+  shakeBtn.classList.toggle('btn--mod-disabled', !hasShake);
 
   handleBtn.title = hasHandle
     ? `handle: ${preset.handle.param} on row ${preset.handle.row}`
@@ -251,11 +251,22 @@ export function renderEffectPicker() {
   // Exclude SAMPLE from picker - it's auto-added and required
   const effectNames = Object.keys(EFFECTS).filter(name => name !== 'SAMPLE');
 
-  picker.innerHTML = effectNames.map(name => `
-    <div class="effect-picker__item" data-effect="${name}">
-      ${name}
-    </div>
-  `).join('');
+  // Get effects already in the current preset
+  const preset = appState.presets[appState.selectedSlot];
+  const existingEffects = preset?.list?.map(e => e.effect) || [];
+
+  picker.innerHTML = effectNames.map(name => {
+    // Check if this single-instance effect is already used
+    const isSingleInstance = SINGLE_INSTANCE_EFFECTS.includes(name);
+    const isAlreadyUsed = isSingleInstance && existingEffects.includes(name);
+    const disabledClass = isAlreadyUsed ? 'effect-picker__item--disabled' : '';
+
+    return `
+      <div class="effect-picker__item ${disabledClass}" data-effect="${name}" ${isAlreadyUsed ? 'data-disabled="true"' : ''}>
+        ${name}
+      </div>
+    `;
+  }).join('');
 }
 
 // Drag and drop initialization
@@ -295,6 +306,7 @@ export function initSortable() {
 
 // Modal functions
 export function openEffectModal() {
+  renderEffectPicker(); // Re-render to update disabled states
   document.getElementById('effectModal').classList.add('modal--open');
 }
 

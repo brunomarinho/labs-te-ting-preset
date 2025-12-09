@@ -1,3 +1,6 @@
+// Effects that can only be added once per preset
+export const SINGLE_INSTANCE_EFFECTS = ['SSB', 'REVERB', 'HARMONY', 'DELAY'];
+
 // Effect definitions with parameter ranges and defaults
 export const EFFECTS = {
   BALANCE: {
@@ -25,7 +28,8 @@ export const EFFECTS = {
       'dry-level': { min: 0, max: 1, default: 1 },
       'lowpass-cutoff': { min: 0, max: 1, default: 1 },
       'highpass-cutoff': { min: 0, max: 1, default: 0 },
-      'cross-feed': { min: 0, max: 1, default: 0 }
+      'cross-feed': { min: 0, max: 1, default: 0 },
+      balance: { min: 0, max: 1, default: 0.5 }
     }
   },
   REVERB: {

@@ -1,4 +1,4 @@
-import { EFFECTS, createDefaultSampleConfig } from './effects.js';
+import { EFFECTS, createDefaultSampleConfig, SINGLE_INSTANCE_EFFECTS } from './effects.js';
 import { appState, ensurePreset } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
@@ -26,8 +26,8 @@ export function selectSlot(index) {
   audioEngine.stopLfo();
   audioEngine.setHandleActive(false);
   audioEngine.setShakeActive(false);
-  document.getElementById('handleSimBtn').classList.remove('mod-sim-btn--active');
-  document.getElementById('shakeSimBtn').classList.remove('mod-sim-btn--active');
+  document.getElementById('handleSimBtn').classList.remove('btn--mod-active');
+  document.getElementById('shakeSimBtn').classList.remove('btn--mod-active');
 
   const preset = appState.presets[index];
   audioEngine.buildChain(preset);
@@ -72,6 +72,9 @@ export async function selectSample(sampleType) {
   saveState();
 }
 
+const PLAY_ICON = '<svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 12.7484C0.00387125 12.9732 0.0692511 13.1925 0.189023 13.3827C0.308794 13.5728 0.478385 13.7265 0.679356 13.8269C0.880046 13.9404 1.10664 14 1.33714 14C1.56765 14 1.79425 13.9404 1.99493 13.8269L11.3226 8.05692C11.5255 7.95913 11.6968 7.80603 11.8167 7.61525C11.9365 7.42446 12 7.20372 12 6.97841C12 6.7531 11.9365 6.53236 11.8167 6.34157C11.6968 6.15078 11.5255 5.99769 11.3226 5.8999L1.99493 0.173011C1.79425 0.0595984 1.56765 0 1.33714 0C1.10664 0 0.880046 0.0595984 0.679356 0.173011C0.478385 0.273516 0.308794 0.427191 0.189023 0.617338C0.0692511 0.807479 0.00387125 1.02683 0 1.25152V12.7484Z" fill="currentColor"/></svg>';
+const STOP_ICON = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="14" height="14" rx="1" fill="currentColor"/></svg>';
+
 export async function togglePlayback() {
   const playBtn = document.getElementById('playBtn');
   const playIcon = document.getElementById('playIcon');
@@ -82,14 +85,14 @@ export async function togglePlayback() {
     audioEngine.stopLfo();
     appState.isPlaying = false;
     playBtn.classList.remove('play-btn--playing');
-    playIcon.innerHTML = '&#9654;';
+    playIcon.innerHTML = PLAY_ICON;
     playText.textContent = 'play';
   } else {
     await audioEngine.play();
     audioEngine.startLfo(); // Start LFO if configured
     appState.isPlaying = true;
     playBtn.classList.add('play-btn--playing');
-    playIcon.innerHTML = '&#9632;';
+    playIcon.innerHTML = STOP_ICON;
     playText.textContent = 'stop';
   }
 }
@@ -99,6 +102,15 @@ export function addEffect(effectName) {
 
   const preset = appState.presets[appState.selectedSlot];
   const effectDef = EFFECTS[effectName];
+
+  // Check if this is a single-instance effect that's already in the chain
+  if (SINGLE_INSTANCE_EFFECTS.includes(effectName)) {
+    const alreadyExists = preset.list.some(e => e.effect === effectName);
+    if (alreadyExists) {
+      showToast(`${effectName} can only be added once`, 'error');
+      return;
+    }
+  }
 
   // Create effect config with default params
   const effectConfig = { effect: effectName };
@@ -410,37 +422,37 @@ export function setupEventListeners() {
 
   // Handle - toggle on/off
   handleBtn.addEventListener('click', () => {
-    if (handleBtn.classList.contains('mod-sim-btn--disabled')) return;
-    const isActive = handleBtn.classList.toggle('mod-sim-btn--active');
+    if (handleBtn.classList.contains('btn--mod-disabled')) return;
+    const isActive = handleBtn.classList.toggle('btn--mod-active');
     audioEngine.setHandleActive(isActive);
   });
 
   // Shake - momentary (active while pressed)
   shakeBtn.addEventListener('mousedown', () => {
-    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
-    shakeBtn.classList.add('mod-sim-btn--active');
+    if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+    shakeBtn.classList.add('btn--mod-active');
     audioEngine.setShakeActive(true);
   });
   shakeBtn.addEventListener('mouseup', () => {
-    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
-    shakeBtn.classList.remove('mod-sim-btn--active');
+    if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+    shakeBtn.classList.remove('btn--mod-active');
     audioEngine.setShakeActive(false);
   });
   shakeBtn.addEventListener('mouseleave', () => {
-    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
-    shakeBtn.classList.remove('mod-sim-btn--active');
+    if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+    shakeBtn.classList.remove('btn--mod-active');
     audioEngine.setShakeActive(false);
   });
   // Touch support for shake
   shakeBtn.addEventListener('touchstart', (e) => {
-    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
+    if (shakeBtn.classList.contains('btn--mod-disabled')) return;
     e.preventDefault();
-    shakeBtn.classList.add('mod-sim-btn--active');
+    shakeBtn.classList.add('btn--mod-active');
     audioEngine.setShakeActive(true);
   });
   shakeBtn.addEventListener('touchend', () => {
-    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
-    shakeBtn.classList.remove('mod-sim-btn--active');
+    if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+    shakeBtn.classList.remove('btn--mod-active');
     audioEngine.setShakeActive(false);
   });
 
@@ -483,7 +495,7 @@ export function setupEventListeners() {
   // Effect picker
   document.getElementById('effectPicker').addEventListener('click', (e) => {
     const item = e.target.closest('.effect-picker__item');
-    if (item) {
+    if (item && !item.dataset.disabled) {
       addEffect(item.dataset.effect);
       closeEffectModal();
     }
@@ -577,4 +589,37 @@ export function setupEventListeners() {
 
   // Export
   document.getElementById('exportBtn').addEventListener('click', handleExport);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ignore if typing in an input field
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // Ignore key repeat (holding key down)
+    if (e.repeat) return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlayback();
+    }
+
+    if (e.key === 'h' || e.key === 'H') {
+      if (handleBtn.classList.contains('btn--mod-disabled')) return;
+      const isActive = handleBtn.classList.toggle('btn--mod-active');
+      audioEngine.setHandleActive(isActive);
+    }
+
+    if (e.key === 's' || e.key === 'S') {
+      if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+      shakeBtn.classList.add('btn--mod-active');
+      audioEngine.setShakeActive(true);
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 's' || e.key === 'S') {
+      if (shakeBtn.classList.contains('btn--mod-disabled')) return;
+      shakeBtn.classList.remove('btn--mod-active');
+      audioEngine.setShakeActive(false);
+    }
+  });
 }

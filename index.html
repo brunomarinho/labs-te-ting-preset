@@ -3,7 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ting preset editor</title>
+
+  <!-- SEO -->
+  <title>Ting Preset Editor - Unofficial EP-2350 Preset Creator</title>
+  <meta name="description" content="Create, edit, and export custom effect chains and modulation settings for the Teenage Engineering EP-2350 Ting microphone without the official app.">
+  <meta name="keywords" content="Teenage Engineering, EP-2350, Ting, preset editor, audio effects, microphone">
+  <meta name="author" content="Bruno Marinho">
+  <link rel="canonical" href="https://ting.brunomarinho.com">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ting.brunomarinho.com">
+  <meta property="og:title" content="Ting Preset Editor - Unofficial EP-2350 Preset Creator">
+  <meta property="og:description" content="Create, edit, and export custom effect chains and modulation settings for the Teenage Engineering EP-2350 Ting microphone.">
+  <meta property="og:image" content="https://ting.brunomarinho.com/og-image.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://ting.brunomarinho.com">
+  <meta name="twitter:title" content="Ting Preset Editor - Unofficial EP-2350 Preset Creator">
+  <meta name="twitter:description" content="Create, edit, and export custom effect chains and modulation settings for the Teenage Engineering EP-2350 Ting microphone.">
+  <meta name="twitter:image" content="https://ting.brunomarinho.com/og-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#FE671D">
+
+  <!-- Scripts & Styles -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <link rel="stylesheet" href="styles.css">
@@ -27,22 +56,22 @@
 
     <!-- Audio Source Selector -->
     <section class="audio-source">
-      <div class="audio-source__samples">
-        <button class="sample-btn sample-btn--active" data-sample="singing" id="singSampleBtn">singing</button>
-        <button class="sample-btn" data-sample="spoken" id="spokenSampleBtn">spoken</button>
+      <div class="audio-source__group">
+        <label class="audio-source__label">voice preview</label>
+        <div class="audio-source__samples">
+          <button class="sample-btn sample-btn--active" data-sample="singing" id="singSampleBtn">singing</button>
+          <button class="sample-btn" data-sample="spoken" id="spokenSampleBtn">spoken</button>
+        </div>
       </div>
-      <div class="audio-source__controls">
-        <button class="mod-sim-btn" id="handleSimBtn">
-          <span class="mod-sim-btn__icon">✊</span>
-          <span class="mod-sim-btn__label">handle</span>
-        </button>
-        <button class="mod-sim-btn" id="shakeSimBtn">
-          <span class="mod-sim-btn__icon">📳</span>
-          <span class="mod-sim-btn__label">shake</span>
-        </button>
+      <div class="audio-source__group">
+        <label class="audio-source__label">button emulation</label>
+        <div class="audio-source__controls">
+          <button class="btn btn--mod" id="handleSimBtn">handle (h)</button>
+          <button class="btn btn--mod" id="shakeSimBtn">shake (s)</button>
+        </div>
       </div>
       <button class="play-btn" id="playBtn">
-        <span class="play-btn__icon" id="playIcon">&#9654;</span>
+        <span class="play-btn__icon" id="playIcon"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 12.7484C0.00387125 12.9732 0.0692511 13.1925 0.189023 13.3827C0.308794 13.5728 0.478385 13.7265 0.679356 13.8269C0.880046 13.9404 1.10664 14 1.33714 14C1.56765 14 1.79425 13.9404 1.99493 13.8269L11.3226 8.05692C11.5255 7.95913 11.6968 7.80603 11.8167 7.61525C11.9365 7.42446 12 7.20372 12 6.97841C12 6.7531 11.9365 6.53236 11.8167 6.34157C11.6968 6.15078 11.5255 5.99769 11.3226 5.8999L1.99493 0.173011C1.79425 0.0595984 1.56765 0 1.33714 0C1.10664 0 0.880046 0.0595984 0.679356 0.173011C0.478385 0.273516 0.308794 0.427191 0.189023 0.617338C0.0692511 0.807479 0.00387125 1.02683 0 1.25152V12.7484Z" fill="currentColor"/></svg></span>
         <span class="play-btn__text" id="playText">play</span>
       </button>
     </section>
@@ -59,7 +88,7 @@
           placeholder="pack name"
         >
       </div>
-      <button class="pack-header__clear" id="resetBtn">clear all</button>
+      <button class="pack-header__clear" id="resetBtn">reset</button>
     </section>
 
     <!-- Preset Slots -->
