@@ -45,17 +45,17 @@ export function renderEffectCard(effectConfig, index) {
   // MIC IN (SAMPLE) cannot be deleted
   const deleteBtn = isSample
     ? ''
-    : `<button class="effect-card__delete" data-index="${index}" title="remove">×</button>`;
+    : `<button class="effect-card__delete" data-index="${index}">remove effect</button>`;
 
   return `
     <div class="effect-card ${isSample ? 'effect-card--sample' : ''}" data-index="${index}">
       <div class="effect-card__header">
         <div class="effect-card__left">
-          <span class="effect-card__drag">&#9776;</span>
           <span class="effect-card__row">${index}</span>
           <span class="effect-card__name">${displayName}</span>
         </div>
         ${deleteBtn}
+        <span class="effect-card__drag">&#9776;</span>
       </div>
       ${paramsHtml ? `<div class="effect-card__params">${paramsHtml}</div>` : ''}
     </div>
@@ -90,10 +90,27 @@ export function renderPresetSlots() {
   for (let i = 0; i < 4; i++) {
     const slot = document.querySelector(`.preset-slot[data-slot="${i}"]`);
     const nameEl = document.getElementById(`slotName${i}`);
+    const clearBtn = slot.querySelector('.preset-slot__clear');
     const preset = appState.presets[i];
 
     slot.classList.toggle('preset-slot--active', i === appState.selectedSlot);
     nameEl.textContent = preset ? preset.name || 'unnamed' : 'empty';
+
+    // Disable clear button if slot is empty
+    if (clearBtn) {
+      clearBtn.disabled = !preset;
+    }
+  }
+
+  // Update clear all button
+  updateClearAllButton();
+}
+
+export function updateClearAllButton() {
+  const clearAllBtn = document.getElementById('resetBtn');
+  if (clearAllBtn) {
+    const hasAnyPreset = appState.presets.some(p => p !== null);
+    clearAllBtn.disabled = !hasAnyPreset;
   }
 }
 

@@ -13,7 +13,7 @@
     <!-- Header -->
     <header class="header">
       <div class="header__titles">
-        <h1 class="header__title">ting preset editor</h1>
+        <h1 class="header__title">A thing for ting</h1>
         <span class="header__subtitle">unofficial preset editor for EP–2350</span>
       </div>
       <div class="header__right">
@@ -21,7 +21,7 @@
           import
           <input type="file" id="importFile" accept=".json" hidden>
         </label>
-        <button class="btn btn--primary" id="exportBtn">export</button>
+        <button class="btn" id="exportBtn">export</button>
       </div>
     </header>
 
@@ -59,7 +59,7 @@
           placeholder="pack name"
         >
       </div>
-      <button class="btn" id="resetBtn">clear all</button>
+      <button class="pack-header__clear" id="resetBtn">clear all</button>
     </section>
 
     <!-- Preset Slots -->
@@ -101,15 +101,14 @@
       </div>
 
       <!-- Effect Chain -->
-      <div class="effect-chain">
-        <h3 class="section-title">effect chain</h3>
-        <div class="effect-list" id="effectList">
-          <!-- Effects will be rendered here -->
-        </div>
-        <button class="btn btn--add" id="addEffectBtn">+ add effect</button>
+      <h3 class="section-title">effect chain</h3>
+      <div class="effect-list" id="effectList">
+        <!-- Effects will be rendered here -->
       </div>
+      <button class="btn btn--add" id="addEffectBtn">+ add effect</button>
 
       <!-- Modulation Panels -->
+      <h3 class="section-title">modulation</h3>
       <div class="modulation-panels">
         <!-- Handle Modulation -->
         <div class="mod-panel">
