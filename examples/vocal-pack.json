@@ -1,0 +1,156 @@
+{
+  "name": "ICONIC VOCALS PACK",
+  "presets": [
+    {
+      "pos": 0,
+      "name": "ROBOT LOVE",
+      "comment": "daft punk style. handle sweeps ring frequency.",
+      "list": [
+        {
+          "effect": "RING",
+          "frequency": 200,
+          "mix": 0.7
+        },
+        {
+          "effect": "LOWPASS",
+          "cutoff": 0.6
+        },
+        {
+          "effect": "REVERB",
+          "time": 0.2,
+          "wet-level": 0.2
+        },
+        {
+          "effect": "SAMPLE"
+        }
+      ],
+      "handle": {
+        "row": 0,
+        "param": "frequency",
+        "depth": 300
+      },
+      "shake": {
+        "row": 0,
+        "param": "mix",
+        "depth": 0.3
+      },
+      "trigger": {
+        "row": 3
+      }
+    },
+    {
+      "pos": 1,
+      "name": "ASTROWORLD",
+      "comment": "dark trap vocal. shake adds distortion.",
+      "list": [
+        {
+          "effect": "HARMONY",
+          "pitch": 0.75,
+          "dry-level": 0.3
+        },
+        {
+          "effect": "DIST",
+          "amount": 8,
+          "mix": 0.2
+        },
+        {
+          "effect": "REVERB",
+          "time": 0.8,
+          "wet-level": 0.6
+        },
+        {
+          "effect": "SAMPLE"
+        }
+      ],
+      "handle": {
+        "row": 0,
+        "param": "pitch",
+        "depth": -0.25
+      },
+      "shake": {
+        "row": 1,
+        "param": "mix",
+        "depth": 0.5
+      },
+      "trigger": {
+        "row": 3
+      }
+    },
+    {
+      "pos": 2,
+      "name": "SPACE ODDITY",
+      "comment": "transmission from space. handle tunes ssb frequency.",
+      "list": [
+        {
+          "effect": "SSB",
+          "frequency": -200
+        },
+        {
+          "effect": "HIGHPASS",
+          "cutoff": 0.2
+        },
+        {
+          "effect": "LOWPASS",
+          "cutoff": 0.5
+        },
+        {
+          "effect": "DIST",
+          "amount": 5,
+          "mix": 0.3
+        },
+        {
+          "effect": "SAMPLE"
+        }
+      ],
+      "handle": {
+        "row": 0,
+        "param": "frequency",
+        "depth": 500
+      },
+      "shake": {
+        "row": 3,
+        "param": "mix",
+        "depth": 0.4
+      },
+      "trigger": {
+        "row": 4
+      }
+    },
+    {
+      "pos": 3,
+      "name": "MEGAPHONE",
+      "comment": "bullhorn voice. shake adds more distortion.",
+      "list": [
+        {
+          "effect": "HIGHPASS",
+          "cutoff": 0.35
+        },
+        {
+          "effect": "LOWPASS",
+          "cutoff": 0.55
+        },
+        {
+          "effect": "DIST",
+          "amount": 25,
+          "mix": 0.7
+        },
+        {
+          "effect": "SAMPLE"
+        }
+      ],
+      "handle": {
+        "row": 1,
+        "param": "cutoff",
+        "depth": 0.3
+      },
+      "shake": {
+        "row": 2,
+        "param": "amount",
+        "depth": 15
+      },
+      "trigger": {
+        "row": 3
+      }
+    }
+  ]
+}

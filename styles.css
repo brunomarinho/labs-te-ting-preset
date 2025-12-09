@@ -142,6 +142,9 @@ body {
 }
 
 .btn--import {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -287,9 +290,21 @@ body {
 /* Pack Header */
 .pack-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-sm);
   margin-bottom: var(--space-sm);
+}
+
+.pack-header__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.pack-header__label {
+  font-size: var(--text-sm);
+  color: var(--mid-gray);
 }
 
 .pack-header__name {
@@ -300,7 +315,8 @@ body {
   border: 1px solid var(--black);
   padding: var(--space-sm) var(--space-md);
   background: var(--white);
-  flex: 1;
+  width: 100%;
+  min-height: var(--input-height);
 }
 
 .pack-header__name:focus {
