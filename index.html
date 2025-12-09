@@ -12,18 +12,8 @@
   <div class="app">
     <!-- Header -->
     <header class="header">
-      <div class="header__left">
-        <h1 class="header__title">ting preset editor</h1>
-        <input
-          type="text"
-          class="header__pack-name"
-          id="packName"
-          value="MY PACK"
-          placeholder="pack name"
-        >
-      </div>
+      <h1 class="header__title">ting preset editor</h1>
       <div class="header__right">
-        <button class="btn" id="resetBtn">reset</button>
         <label class="btn btn--import">
           import
           <input type="file" id="importFile" accept=".json" hidden>
@@ -54,27 +44,39 @@
       </button>
     </section>
 
+    <!-- Pack Header -->
+    <section class="pack-header">
+      <input
+        type="text"
+        class="pack-header__name"
+        id="packName"
+        value="MY PACK"
+        placeholder="pack name"
+      >
+      <button class="btn" id="resetBtn">clear all</button>
+    </section>
+
     <!-- Preset Slots -->
     <section class="preset-slots">
       <div class="preset-slot preset-slot--active" data-slot="0">
         <span class="preset-slot__number">1</span>
         <span class="preset-slot__name" id="slotName0">empty</span>
-        <button class="preset-slot__clear" data-slot="0" title="clear">×</button>
+        <button class="preset-slot__clear" data-slot="0">clear</button>
       </div>
       <div class="preset-slot" data-slot="1">
         <span class="preset-slot__number">2</span>
         <span class="preset-slot__name" id="slotName1">empty</span>
-        <button class="preset-slot__clear" data-slot="1" title="clear">×</button>
+        <button class="preset-slot__clear" data-slot="1">clear</button>
       </div>
       <div class="preset-slot" data-slot="2">
         <span class="preset-slot__number">3</span>
         <span class="preset-slot__name" id="slotName2">empty</span>
-        <button class="preset-slot__clear" data-slot="2" title="clear">×</button>
+        <button class="preset-slot__clear" data-slot="2">clear</button>
       </div>
       <div class="preset-slot" data-slot="3">
         <span class="preset-slot__number">4</span>
         <span class="preset-slot__name" id="slotName3">empty</span>
-        <button class="preset-slot__clear" data-slot="3" title="clear">×</button>
+        <button class="preset-slot__clear" data-slot="3">clear</button>
       </div>
     </section>
 

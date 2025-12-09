@@ -43,32 +43,10 @@ body {
   gap: 12px;
 }
 
-.header__left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
 .header__title {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.5px;
-}
-
-.header__pack-name {
-  font-family: inherit;
-  font-size: 14px;
-  text-transform: uppercase;
-  border: 1px solid var(--black);
-  padding: 12px 16px;
-  background: var(--white);
-  width: 200px;
-}
-
-.header__pack-name:focus {
-  outline: none;
-  border-color: var(--orange);
 }
 
 .header__right {
@@ -253,6 +231,30 @@ body {
   font-size: 16px;
 }
 
+/* Pack Header */
+.pack-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pack-header__name {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid var(--black);
+  padding: 12px 16px;
+  background: var(--white);
+  flex: 1;
+}
+
+.pack-header__name:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
 /* Preset Slots */
 .preset-slots {
   display: grid;
@@ -305,20 +307,16 @@ body {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 28px;
-  height: 28px;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 18px;
+  font-family: inherit;
+  font-size: 11px;
   color: var(--mid-gray);
   opacity: 0;
   transition: opacity 0.15s ease;
-  padding: 0;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 4px 8px;
+  text-transform: lowercase;
 }
 
 .preset-slot:hover .preset-slot__clear,

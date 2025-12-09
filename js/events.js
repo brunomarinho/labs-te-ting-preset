@@ -363,7 +363,7 @@ export function handleExport() {
 }
 
 export function handleReset() {
-  if (!confirm('Reset all data? This will clear all presets and settings.')) {
+  if (!confirm('Clear all presets and settings?')) {
     return;
   }
 
