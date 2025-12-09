@@ -362,6 +362,35 @@ export function handleExport() {
   showToast('config exported', 'success');
 }
 
+export function handleReset() {
+  if (!confirm('Reset all data? This will clear all presets and settings.')) {
+    return;
+  }
+
+  // Reset to defaults
+  appState.packName = 'MY PACK';
+  appState.selectedSlot = 0;
+  appState.selectedSample = 'singing';
+  appState.presets = [null, null, null, null];
+
+  // Update UI
+  document.getElementById('packName').value = appState.packName;
+  document.getElementById('singSampleBtn').classList.add('sample-btn--active');
+  document.getElementById('spokenSampleBtn').classList.remove('sample-btn--active');
+
+  renderPresetSlots();
+  renderPresetEditor();
+
+  // Reset audio
+  audioEngine.buildChain(null);
+  audioEngine.loadSample('singing');
+
+  // Clear localStorage
+  saveState();
+
+  showToast('reset complete', 'success');
+}
+
 // Main event listener setup
 
 export function setupEventListeners() {
@@ -381,30 +410,36 @@ export function setupEventListeners() {
 
   // Handle - toggle on/off
   handleBtn.addEventListener('click', () => {
+    if (handleBtn.classList.contains('mod-sim-btn--disabled')) return;
     const isActive = handleBtn.classList.toggle('mod-sim-btn--active');
     audioEngine.setHandleActive(isActive);
   });
 
   // Shake - momentary (active while pressed)
   shakeBtn.addEventListener('mousedown', () => {
+    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
     shakeBtn.classList.add('mod-sim-btn--active');
     audioEngine.setShakeActive(true);
   });
   shakeBtn.addEventListener('mouseup', () => {
+    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
     shakeBtn.classList.remove('mod-sim-btn--active');
     audioEngine.setShakeActive(false);
   });
   shakeBtn.addEventListener('mouseleave', () => {
+    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
     shakeBtn.classList.remove('mod-sim-btn--active');
     audioEngine.setShakeActive(false);
   });
   // Touch support for shake
   shakeBtn.addEventListener('touchstart', (e) => {
+    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
     e.preventDefault();
     shakeBtn.classList.add('mod-sim-btn--active');
     audioEngine.setShakeActive(true);
   });
   shakeBtn.addEventListener('touchend', () => {
+    if (shakeBtn.classList.contains('mod-sim-btn--disabled')) return;
     shakeBtn.classList.remove('mod-sim-btn--active');
     audioEngine.setShakeActive(false);
   });
@@ -533,6 +568,9 @@ export function setupEventListeners() {
   // Trigger
   document.getElementById('triggerEnabled').addEventListener('change', updateTrigger);
   document.getElementById('triggerRow').addEventListener('change', updateTrigger);
+
+  // Reset
+  document.getElementById('resetBtn').addEventListener('click', handleReset);
 
   // Import
   document.getElementById('importFile').addEventListener('change', handleImport);

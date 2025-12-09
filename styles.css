@@ -192,11 +192,11 @@ body {
   min-width: 70px;
 }
 
-.mod-sim-btn:hover {
+.mod-sim-btn:not(.mod-sim-btn--disabled):hover {
   border-color: var(--black);
 }
 
-.mod-sim-btn--active {
+.mod-sim-btn--active:not(.mod-sim-btn--disabled) {
   background: var(--orange);
   border-color: var(--orange);
   color: var(--white);
