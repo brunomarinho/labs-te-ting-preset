@@ -3,3 +3,6 @@ CLAUDE.md
 
 # macOS
 .DS_Store
+
+# Dependencies
+node_modules/
