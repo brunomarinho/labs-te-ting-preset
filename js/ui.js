@@ -269,6 +269,34 @@ export function renderEffectPicker() {
   }).join('');
 }
 
+// Update modulation row references when effects are reordered
+function updateModulationRowReferences(preset, oldIndex, newIndex) {
+  if (oldIndex === newIndex) return;
+
+  const modulations = ['handle', 'shake', 'lfo', 'trigger'];
+
+  modulations.forEach(modType => {
+    if (preset[modType] && preset[modType].row !== undefined) {
+      const currentRow = preset[modType].row;
+
+      if (currentRow === oldIndex) {
+        // The modulation's target effect was moved
+        preset[modType].row = newIndex;
+      } else if (oldIndex < newIndex) {
+        // Effect moved down: rows between old and new shift up by 1
+        if (currentRow > oldIndex && currentRow <= newIndex) {
+          preset[modType].row = currentRow - 1;
+        }
+      } else {
+        // Effect moved up: rows between new and old shift down by 1
+        if (currentRow >= newIndex && currentRow < oldIndex) {
+          preset[modType].row = currentRow + 1;
+        }
+      }
+    }
+  });
+}
+
 // Drag and drop initialization
 export function initSortable() {
   const effectList = document.getElementById('effectList');
@@ -290,8 +318,15 @@ export function initSortable() {
       const preset = appState.presets[appState.selectedSlot];
       if (!preset || !preset.list) return;
 
-      const item = preset.list.splice(evt.oldIndex, 1)[0];
-      preset.list.splice(evt.newIndex, 0, item);
+      const oldIndex = evt.oldIndex;
+      const newIndex = evt.newIndex;
+
+      // Move the effect in the list
+      const item = preset.list.splice(oldIndex, 1)[0];
+      preset.list.splice(newIndex, 0, item);
+
+      // Update all modulation row references
+      updateModulationRowReferences(preset, oldIndex, newIndex);
 
       // Re-render to update indices
       renderEffectList();
