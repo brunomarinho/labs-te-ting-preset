@@ -10,7 +10,8 @@ Create, edit, and export custom effect chains and modulation settings without us
 
 - **Effect Chain Builder** - Add and reorder effects with drag-and-drop
 - **Real-time Audio Preview** - Hear your presets with sample audio (emulation mode)
-- **Live Hardware Control** - Send parameters directly to your Ting via WebUSB
+- **Live Hardware Connection** - Connect to your Ting via Web Serial to tweak parameters and sync presets
+- **Save to Device** - Write presets directly to device config.json
 - **Modulation Settings** - Configure handle, shake, LFO, and trigger
 - **Import/Export** - Load existing presets or export for use on the device
 - **4 Preset Slots** - Just like the actual device
@@ -43,38 +44,43 @@ Create, edit, and export custom effect chains and modulation settings without us
 ## Preview Modes
 
 ### Emulation Mode
-Uses Tone.js in the browser to simulate effects. Useful for quick previewing without the physical device.
+Uses Tone.js in the browser to simulate effects. Full editing capabilities - add, remove, reorder effects and adjust parameters with real-time audio preview. **Recommended for designing presets.**
 
 ### Live Hardware Mode
-Connects to your Ting via WebUSB and sends parameter changes directly to the device. When you adjust a slider, the change is sent to the hardware in real-time.
+Connects to your Ting via Web Serial and allows parameter tweaking and preset switching on the actual device.
 
 **Requirements:**
-- Chrome, Edge, or other Chromium-based browser (WebUSB required)
+- Chrome, Edge, or other Chromium-based browser (Web Serial required)
 - Ting connected via USB
 - Audio output from Ting routed to speakers/headphones
 
 **To use Live Mode:**
 1. Click "live" toggle in the header
 2. Click "connect device" and select your EP-2350
-3. Adjust sliders - changes are sent to the device in real-time
-4. Listen through the Ting's audio output
+3. Presets are imported from the device
+4. Adjust sliders - changes are sent when you release the slider
+5. Click "save to device" to write changes to config.json
+
+**Live Mode Limitations:**
+- Parameter changes are sent on slider release (not during drag) to prevent device freeze
+- Adding, removing, or reordering effects is disabled - use Emulation mode for structural changes
+- Preset slot switching syncs between app and hardware button
 
 ## Usage
 
-1. Select a preset slot (1-4)
-2. Add effects using the "+ add effect" button
-3. Adjust parameters with the sliders
-4. Configure modulation (handle, shake, LFO, trigger)
-5. Preview with the play button
-6. Export your config.json file
-7. Copy to your EP-2350 device
+### Recommended Workflow
+1. Use **Emulation mode** to design and preview your presets
+2. Add effects, adjust parameters, configure modulation
+3. Preview with the play button (uses browser audio)
+4. Connect to device in **Live mode** to transfer presets
+5. Click "save to device" to write to the device
 
-## How to Load on Device
-
-1. Connect your EP-2350 to your computer via USB
-2. The device will appear as a storage device
-3. Replace or merge with the existing `config.json` file
-4. Safely eject and restart the device
+### Manual Export
+1. Design presets in Emulation mode
+2. Click "export json" to download config.json
+3. Connect EP-2350 via USB (appears as storage device)
+4. Replace the existing `config.json` file
+5. Safely eject and restart the device
 
 ## Development
 

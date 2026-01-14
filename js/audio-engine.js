@@ -44,7 +44,7 @@ export class AudioEngine {
 
     try {
       await this.player.load(url);
-    } catch (_e) {
+    } catch {
       console.warn(`Could not load ${url}, using silent buffer`);
       // Create a silent buffer as fallback
       const buffer = Tone.context.createBuffer(2, 44100 * 2, 44100);
