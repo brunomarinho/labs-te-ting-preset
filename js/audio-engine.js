@@ -17,6 +17,11 @@ export class AudioEngine {
     this.lfoGain = null;
   }
 
+  // Clamp value to [0, 1] range to prevent Tone.js errors
+  clamp01(value) {
+    return Math.max(0, Math.min(1, value));
+  }
+
   async init() {
     if (this.isInitialized) return;
 
@@ -280,7 +285,7 @@ export class AudioEngine {
         if (param === 'amount') {
           node._distortion.distortion = value / 40;
         } else if (param === 'mix') {
-          node._distortion.wet.value = value;
+          node._distortion.wet.value = this.clamp01(value);
         } else if (param === 'lowpass-cutoff') {
           node._lowpass.frequency.value = this.cutoffToFreq(value);
         } else if (param === 'highpass-cutoff') {
@@ -289,32 +294,33 @@ export class AudioEngine {
         break;
       case 'DELAY':
         if (param === 'time') {
-          node.delayTime.value = value;
+          // Tone.js delayTime accepts values > 1 second, but clamp to reasonable max
+          node.delayTime.value = Math.min(value, 1.1);
         } else if (param === 'echo') {
-          node.feedback.value = value;
+          node.feedback.value = this.clamp01(value);
         } else if (param === 'wet-level') {
-          node.wet.value = value;
+          node.wet.value = this.clamp01(value);
         }
         break;
       case 'REVERB':
         if (param === 'time') {
-          node.decay = value * 10 + 0.1;
+          node.decay = this.clamp01(value) * 10 + 0.1;
         } else if (param === 'wet-level') {
-          node.wet.value = value;
+          node.wet.value = this.clamp01(value);
         }
         break;
       case 'RING':
         if (param === 'frequency') {
           node.frequency.value = value;
         } else if (param === 'mix') {
-          node.wet.value = value;
+          node.wet.value = this.clamp01(value);
         }
         break;
       case 'HARMONY':
         if (param === 'pitch') {
           node.pitch = Math.log2(value) * 12;
         } else if (param === 'dry-level') {
-          node.wet.value = 1 - value;
+          node.wet.value = this.clamp01(1 - value);
         }
         break;
       case 'SSB':

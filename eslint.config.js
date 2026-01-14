@@ -1,38 +1,40 @@
+import js from '@eslint/js';
+
 export default [
+  js.configs.recommended,
   {
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
+        // Browser globals
         window: 'readonly',
         document: 'readonly',
-        localStorage: 'readonly',
+        navigator: 'readonly',
         console: 'readonly',
         setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        performance: 'readonly',
+        localStorage: 'readonly',
+        FileReader: 'readonly',
+        Blob: 'readonly',
+        URL: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
         confirm: 'readonly',
         alert: 'readonly',
-        URL: 'readonly',
-        Blob: 'readonly',
-        FileReader: 'readonly',
-        AudioContext: 'readonly',
-        Sortable: 'readonly',
+        // Libraries
         Tone: 'readonly',
-        performance: 'readonly',
-        requestAnimationFrame: 'readonly',
-        cancelAnimationFrame: 'readonly'
+        Sortable: 'readonly'
       }
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
-      'no-undef': 'error',
-      'no-const-assign': 'error',
-      'no-dupe-keys': 'error',
-      'no-duplicate-case': 'error',
-      'no-empty': 'warn',
-      'no-extra-semi': 'error',
-      'no-unreachable': 'error',
-      'semi': ['error', 'always'],
-      'eqeqeq': ['error', 'always', { null: 'ignore' }]
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-console': 'off'
     }
   },
   {

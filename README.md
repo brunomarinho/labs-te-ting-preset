@@ -9,7 +9,8 @@ Create, edit, and export custom effect chains and modulation settings without us
 ## Features
 
 - **Effect Chain Builder** - Add and reorder effects with drag-and-drop
-- **Real-time Audio Preview** - Hear your presets with sample audio
+- **Real-time Audio Preview** - Hear your presets with sample audio (emulation mode)
+- **Live Hardware Control** - Send parameters directly to your Ting via WebUSB
 - **Modulation Settings** - Configure handle, shake, LFO, and trigger
 - **Import/Export** - Load existing presets or export for use on the device
 - **4 Preset Slots** - Just like the actual device
@@ -38,6 +39,25 @@ Create, edit, and export custom effect chains and modulation settings without us
 | `Space` | Play/Stop |
 | `H` | Toggle handle modulation |
 | `S` | Hold for shake modulation |
+
+## Preview Modes
+
+### Emulation Mode
+Uses Tone.js in the browser to simulate effects. Useful for quick previewing without the physical device.
+
+### Live Hardware Mode
+Connects to your Ting via WebUSB and sends parameter changes directly to the device. When you adjust a slider, the change is sent to the hardware in real-time.
+
+**Requirements:**
+- Chrome, Edge, or other Chromium-based browser (WebUSB required)
+- Ting connected via USB
+- Audio output from Ting routed to speakers/headphones
+
+**To use Live Mode:**
+1. Click "live" toggle in the header
+2. Click "connect device" and select your EP-2350
+3. Adjust sliders - changes are sent to the device in real-time
+4. Listen through the Ting's audio output
 
 ## Usage
 
@@ -80,7 +100,8 @@ npx serve .
 │   ├── ui.js           # UI rendering
 │   ├── state.js        # App state
 │   ├── storage.js      # LocalStorage
-│   └── audio-engine.js # Tone.js audio
+│   ├── audio-engine.js # Tone.js audio
+│   └── webusb.js       # WebUSB device control
 ├── samples/            # Preview audio files
 └── examples/           # Example preset packs
 ```

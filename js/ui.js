@@ -94,7 +94,7 @@ export function renderPresetSlots() {
     const preset = appState.presets[i];
 
     slot.classList.toggle('preset-slot--active', i === appState.selectedSlot);
-    nameEl.textContent = preset ? preset.name || 'unnamed' : 'empty';
+    nameEl.textContent = preset ? preset.name || '' : 'empty';
 
     // Disable clear button if slot is empty
     if (clearBtn) {
@@ -347,6 +347,14 @@ export function openEffectModal() {
 
 export function closeEffectModal() {
   document.getElementById('effectModal').classList.remove('modal--open');
+}
+
+export function openHelpModal() {
+  document.getElementById('helpModal').classList.add('modal--open');
+}
+
+export function closeHelpModal() {
+  document.getElementById('helpModal').classList.remove('modal--open');
 }
 
 // Toast notifications
