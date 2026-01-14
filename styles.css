@@ -1125,6 +1125,7 @@ button {
 .footer__credit {
   margin-top: var(--space-lg);
   padding-top: var(--space-md);
+  padding-bottom: var(--space-xl);
   border-top: 1px solid var(--border);
   font-size: var(--text-sm);
   color: var(--mid-gray);

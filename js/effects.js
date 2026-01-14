@@ -66,9 +66,9 @@ export const EFFECTS = {
   }
 };
 
-// Display name mapping (internal SAMPLE -> UI "MIC IN")
+// Display name mapping
 export function getEffectDisplayName(effectName) {
-  return effectName === 'SAMPLE' ? 'MIC IN' : effectName;
+  return effectName;
 }
 
 // Create a default SAMPLE config
