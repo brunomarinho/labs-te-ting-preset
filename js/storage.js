@@ -1,4 +1,4 @@
-import { appState } from './state.js';
+import { appState, PreviewMode } from './state.js';
 
 const STORAGE_KEY = 'ting-preset-editor-state';
 
@@ -7,7 +7,8 @@ export function saveState() {
     packName: appState.packName,
     selectedSlot: appState.selectedSlot,
     selectedSample: appState.selectedSample,
-    presets: appState.presets
+    presets: appState.presets,
+    previewMode: appState.previewMode
   };
 
   try {
@@ -27,6 +28,9 @@ export function loadState() {
       if (typeof parsed.selectedSlot === 'number') appState.selectedSlot = parsed.selectedSlot;
       if (parsed.selectedSample) appState.selectedSample = parsed.selectedSample;
       if (parsed.presets) appState.presets = parsed.presets;
+      if (parsed.previewMode && Object.values(PreviewMode).includes(parsed.previewMode)) {
+        appState.previewMode = parsed.previewMode;
+      }
 
       // Update UI with loaded pack name
       document.getElementById('packName').value = appState.packName;

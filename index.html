@@ -46,43 +46,75 @@
     <header class="header">
       <div class="header__titles">
         <h1 class="header__title">A thing for ting</h1>
-        <span class="header__subtitle">unofficial preset editor for EP–2350</span>
+        <span class="header__subtitle">Unofficial preset editor for EP–2350. <a href="#" class="header__help" id="helpLink">Quick guide.</a></span> 
       </div>
+      
       <div class="header__right">
-        <label class="btn btn--import">
-          import
-          <input type="file" id="importFile" accept=".json" hidden>
-        </label>
-        <button class="btn" id="exportBtn">export</button>
+        
+        <div class="mode-toggle">
+          <button class="mode-toggle__btn mode-toggle__btn--active" id="emulationModeBtn" data-mode="emulation">emulation</button>
+          <button class="mode-toggle__btn" id="hardwareModeBtn" data-mode="hardware">live</button>
+        </div>
       </div>
+      
     </header>
 
     <!-- Audio Source Selector -->
+    
     <section class="audio-source">
-      <div class="audio-source__group">
-        <label class="audio-source__label">voice preview</label>
-        <div class="audio-source__samples">
-          <button class="sample-btn sample-btn--active" data-sample="singing" id="singSampleBtn">singing</button>
-          <button class="sample-btn" data-sample="spoken" id="spokenSampleBtn">spoken</button>
+      
+      <!-- Emulation Mode Controls -->
+      <div class="audio-source__emulation" id="emulationControls">
+        <div class="audio-source__group">
+          <label class="audio-source__label">Voice preview</label>
+          <div class="audio-source__samples">
+            <button class="sample-btn sample-btn--active" data-sample="singing" id="singSampleBtn">Singing</button>
+            <button class="sample-btn" data-sample="spoken" id="spokenSampleBtn">Spoken</button>
+          </div>
         </div>
-      </div>
-      <div class="audio-source__group">
-        <label class="audio-source__label">button emulation</label>
-        <div class="audio-source__controls">
-          <button class="btn btn--mod" id="handleSimBtn">handle (h)</button>
-          <button class="btn btn--mod" id="shakeSimBtn">shake (s)</button>
+        <div class="audio-source__group">
+          <label class="audio-source__label">Button emulation</label>
+          <div class="audio-source__controls">
+            <button class="btn btn--mod" id="handleSimBtn">handle (h)</button>
+            <button class="btn btn--mod" id="shakeSimBtn">shake (s)</button>
+          </div>
         </div>
+        <button class="play-btn" id="playBtn">
+          <span class="play-btn__icon" id="playIcon"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 12.7484C0.00387125 12.9732 0.0692511 13.1925 0.189023 13.3827C0.308794 13.5728 0.478385 13.7265 0.679356 13.8269C0.880046 13.9404 1.10664 14 1.33714 14C1.56765 14 1.79425 13.9404 1.99493 13.8269L11.3226 8.05692C11.5255 7.95913 11.6968 7.80603 11.8167 7.61525C11.9365 7.42446 12 7.20372 12 6.97841C12 6.7531 11.9365 6.53236 11.8167 6.34157C11.6968 6.15078 11.5255 5.99769 11.3226 5.8999L1.99493 0.173011C1.79425 0.0595984 1.56765 0 1.33714 0C1.10664 0 0.880046 0.0595984 0.679356 0.173011C0.478385 0.273516 0.308794 0.427191 0.189023 0.617338C0.0692511 0.807479 0.00387125 1.02683 0 1.25152V12.7484Z" fill="currentColor"/></svg></span>
+          <span class="play-btn__text" id="playText">play</span>
+        </button>
       </div>
-      <button class="play-btn" id="playBtn">
-        <span class="play-btn__icon" id="playIcon"><svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 12.7484C0.00387125 12.9732 0.0692511 13.1925 0.189023 13.3827C0.308794 13.5728 0.478385 13.7265 0.679356 13.8269C0.880046 13.9404 1.10664 14 1.33714 14C1.56765 14 1.79425 13.9404 1.99493 13.8269L11.3226 8.05692C11.5255 7.95913 11.6968 7.80603 11.8167 7.61525C11.9365 7.42446 12 7.20372 12 6.97841C12 6.7531 11.9365 6.53236 11.8167 6.34157C11.6968 6.15078 11.5255 5.99769 11.3226 5.8999L1.99493 0.173011C1.79425 0.0595984 1.56765 0 1.33714 0C1.10664 0 0.880046 0.0595984 0.679356 0.173011C0.478385 0.273516 0.308794 0.427191 0.189023 0.617338C0.0692511 0.807479 0.00387125 1.02683 0 1.25152V12.7484Z" fill="currentColor"/></svg></span>
-        <span class="play-btn__text" id="playText">play</span>
-      </button>
+
+      <!-- Hardware Mode Controls -->
+      <div class="audio-source__hardware" id="hardwareControls" style="display: none;">
+        <div class="audio-source__group">
+          <label class="audio-source__label">Device connection</label>
+          <div class="connection-status">
+            <span class="connection-status__dot" id="connectionDot"></span>
+            <span class="connection-status__text" id="connectionText">Disconnected</span>
+          </div>
+        </div>
+        <button class="btn btn--connect" id="connectBtn">Cconnect device</button>
+        <button class="btn btn--save-device" id="saveToDeviceBtn" disabled>Save to device</button>
+      </div>
     </section>
 
     <!-- Pack Header -->
+    <section class="section-heading">
+    <h3>Preset editor</h3>
+      <div class="section-heading--right">
+        <label class="btn btn--import">
+          Import
+          <input type="file" id="importFile" accept=".json" hidden>
+        </label>
+        <button class="btn" id="exportBtn">Export</button>
+      </div>
+    </section>
+
+    
     <section class="pack-header">
       <div class="pack-header__field">
-        <label class="pack-header__label" for="packName">pack name</label>
+        <label class="pack-header__label" for="packName">Pack name</label>
         <input
           type="text"
           class="pack-header__name"
@@ -91,30 +123,30 @@
           placeholder="pack name"
         >
       </div>
-      <button class="pack-header__clear" id="resetBtn">reset</button>
+      <button class="pack-header__clear" id="resetBtn">Reset</button>
     </section>
 
     <!-- Preset Slots -->
     <section class="preset-slots">
       <div class="preset-slot preset-slot--active" data-slot="0">
         <span class="preset-slot__number">1</span>
-        <span class="preset-slot__name" id="slotName0">empty</span>
-        <button class="preset-slot__clear" data-slot="0">clear</button>
+        <span class="preset-slot__name" id="slotName0">Empty</span>
+        <button class="preset-slot__clear" data-slot="0">Clear</button>
       </div>
       <div class="preset-slot" data-slot="1">
         <span class="preset-slot__number">2</span>
-        <span class="preset-slot__name" id="slotName1">empty</span>
-        <button class="preset-slot__clear" data-slot="1">clear</button>
+        <span class="preset-slot__name" id="slotName1">Empty</span>
+        <button class="preset-slot__clear" data-slot="1">Clear</button>
       </div>
       <div class="preset-slot" data-slot="2">
         <span class="preset-slot__number">3</span>
-        <span class="preset-slot__name" id="slotName2">empty</span>
-        <button class="preset-slot__clear" data-slot="2">clear</button>
+        <span class="preset-slot__name" id="slotName2">Empty</span>
+        <button class="preset-slot__clear" data-slot="2">Clear</button>
       </div>
       <div class="preset-slot" data-slot="3">
         <span class="preset-slot__number">4</span>
-        <span class="preset-slot__name" id="slotName3">empty</span>
-        <button class="preset-slot__clear" data-slot="3">clear</button>
+        <span class="preset-slot__name" id="slotName3">Empty</span>
+        <button class="preset-slot__clear" data-slot="3">Clear</button>
       </div>
     </section>
 
@@ -123,24 +155,24 @@
       <!-- Preset Meta -->
       <div class="preset-meta">
         <div class="form-group">
-          <label for="presetName">name</label>
+          <label for="presetName">Name</label>
           <input type="text" id="presetName" placeholder="preset name" class="input">
         </div>
         <div class="form-group">
-          <label for="presetComment">comment</label>
+          <label for="presetComment">Comment</label>
           <input type="text" id="presetComment" placeholder="description" class="input">
         </div>
       </div>
 
       <!-- Effect Chain -->
-      <h3 class="section-title">effect chain</h3>
+      <h3 class="section-title">Effect chain</h3>
       <div class="effect-list" id="effectList">
         <!-- Effects will be rendered here -->
       </div>
-      <button class="btn btn--add" id="addEffectBtn">+ add effect</button>
+      <button class="btn btn--add" id="addEffectBtn">+ Add effect</button>
 
       <!-- Modulation Panels -->
-      <h3 class="section-title">modulation</h3>
+      <h3 class="section-title">Modulation</h3>
       <div class="modulation-panels">
         <!-- Handle Modulation -->
         <div class="mod-panel">
@@ -149,21 +181,21 @@
               <input type="checkbox" id="handleEnabled">
               <span class="toggle__slider"></span>
             </label>
-            <span class="mod-panel__title">handle modulation</span>
+            <span class="mod-panel__title">Handle modulation</span>
             <span class="mod-panel__chevron">&#9660;</span>
           </div>
           <div class="mod-panel__content" id="handleContent">
             <div class="mod-controls">
               <div class="form-group form-group--inline">
-                <label>target row</label>
+                <label>Target Row</label>
                 <select id="handleRow" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>parameter</label>
+                <label>Parameter</label>
                 <select id="handleParam" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>depth</label>
+                <label>Depth</label>
                 <input type="number" id="handleDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
               </div>
             </div>
@@ -177,21 +209,21 @@
               <input type="checkbox" id="shakeEnabled">
               <span class="toggle__slider"></span>
             </label>
-            <span class="mod-panel__title">shake modulation</span>
+            <span class="mod-panel__title">Shake modulation</span>
             <span class="mod-panel__chevron">&#9660;</span>
           </div>
           <div class="mod-panel__content" id="shakeContent">
             <div class="mod-controls">
               <div class="form-group form-group--inline">
-                <label>target row</label>
+                <label>Target Row</label>
                 <select id="shakeRow" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>parameter</label>
+                <label>Parameter</label>
                 <select id="shakeParam" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>depth</label>
+                <label>Depth</label>
                 <input type="number" id="shakeDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
               </div>
             </div>
@@ -205,34 +237,34 @@
               <input type="checkbox" id="lfoEnabled">
               <span class="toggle__slider"></span>
             </label>
-            <span class="mod-panel__title">lfo modulation</span>
+            <span class="mod-panel__title">LFO Modulation</span>
             <span class="mod-panel__chevron">&#9660;</span>
           </div>
           <div class="mod-panel__content" id="lfoContent">
             <div class="mod-controls">
               <div class="form-group form-group--inline">
-                <label>target row</label>
+                <label>Target Row</label>
                 <select id="lfoRow" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>parameter</label>
+                <label>Parameter</label>
                 <select id="lfoParam" class="select"></select>
               </div>
               <div class="form-group form-group--inline">
-                <label>depth</label>
+                <label>Depth</label>
                 <input type="number" id="lfoDepth" class="input input--small" value="0.5" min="0" max="1" step="0.1">
               </div>
               <div class="form-group form-group--inline">
-                <label>shape</label>
+                <label>Shape</label>
                 <select id="lfoShape" class="select">
-                  <option value="sine">sine</option>
-                  <option value="square">square</option>
-                  <option value="sawtooth">sawtooth</option>
-                  <option value="random">random</option>
+                  <option value="sine">Sine</option>
+                  <option value="square">Square</option>
+                  <option value="sawtooth">Sawtooth</option>
+                  <option value="random">Random</option>
                 </select>
               </div>
               <div class="form-group form-group--inline">
-                <label>speed</label>
+                <label>Speed</label>
                 <input type="number" id="lfoSpeed" class="input input--small" value="1" min="0" max="4" step="0.1">
               </div>
             </div>
@@ -246,13 +278,13 @@
               <input type="checkbox" id="triggerEnabled">
               <span class="toggle__slider"></span>
             </label>
-            <span class="mod-panel__title">trigger</span>
+            <span class="mod-panel__title">Trigger</span>
             <span class="mod-panel__chevron">&#9660;</span>
           </div>
           <div class="mod-panel__content" id="triggerContent">
             <div class="mod-controls">
               <div class="form-group form-group--inline">
-                <label>row</label>
+                <label>Row</label>
                 <select id="triggerRow" class="select"></select>
               </div>
             </div>
@@ -265,26 +297,89 @@
     <div class="modal" id="effectModal">
       <div class="modal__backdrop" id="modalBackdrop"></div>
       <div class="modal__content">
-        <h3 class="modal__title">add effect</h3>
+        <h3 class="modal__title">Add Effect</h3>
         <div class="effect-picker" id="effectPicker">
           <!-- Effect options will be rendered here -->
         </div>
-        <button class="btn modal__close" id="modalClose">cancel</button>
+        <button class="btn modal__close" id="modalClose">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Save Progress Modal -->
+    <div class="modal" id="saveProgressModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content modal__content--progress">
+        <h3 class="modal__title">Saving to Device</h3>
+        <p class="modal__message" id="saveProgressMessage">Please wait, do not disconnect...</p>
+        <div class="progress-bar">
+          <div class="progress-bar__fill" id="saveProgressBar"></div>
+        </div>
+        <p class="modal__status" id="saveProgressStatus">preparing...</p>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+      <div class="modal__backdrop" id="helpModalBackdrop"></div>
+      <div class="modal__content modal__content--help">
+        <button class="modal__close-btn" id="helpModalClose" aria-label="Close">&times;</button>
+        <h3 class="modal__title">Quick Guide</h3>
+
+        
+        <div class="help-content">
+           <section class="help-section">
+            <h4 class="help-section__title">About</h4>
+            <p>This is an unofficial preset editor for the Teenage Engineering EP–2350 Ting microphone. It allows you to create, edit, and export custom effect chains and modulation settings without using the official app.</p>
+           
+          </section>
+
+
+          <section class="help-section">
+            <h4 class="help-section__title">Modes</h4>
+            <p><strong>Emulation:</strong> Tweak and preview presets using your browser's audio.</p>
+            <p><strong>Live:</strong> Connect your EP-2350 via USB to edit presets directly on the device. Must route audio through an audio interface and use a DAW to expose the channel.</p>
+          </section>
+          <section class="help-section">
+            <h4 class="help-section__title">Building Presets</h4>
+            <p>Click <strong>+ Add Effect</strong> to add effects to your chain. Drag to reorder. Each preset can have up to 16 effects.</p>
+            <p>Some effects (Delay, Reverb, Harmony, SSB) can only be used once per preset.</p>
+          </section>
+          <section class="help-section">
+            <h4 class="help-section__title">Modulation</h4>
+            <p><strong>Handle:</strong> Map the device's handle to any effect parameter.</p>
+            <p><strong>Shake:</strong> Map the accelerometer (shaking) to a parameter.</p>
+            <p><strong>LFO:</strong> Add automatic oscillation to any parameter.</p>
+            <p><strong>Trigger:</strong> Set which effect row responds to sample playback.</p>
+          </section>
+          <section class="help-section">
+            <h4 class="help-section__title">Saving</h4>
+            <p>In <strong>Live</strong> mode, click <strong>Save to Device</strong> to write your changes to the EP-2350.</p>
+            <p>Use <strong>Export JSON</strong> to download your pack as a config file.</p>
+          </section>
+          <section class="help-section">
+            <h4 class="help-section__title">Live Mode Limitations</h4>
+            <p>The device communicates via a <strong>MicroPython REPL</strong> interface, which has inherent limitations:</p>
+            <ul class="help-list">
+              <li><strong>Parameter tweaking</strong> is sent to the device when you release the slider, not during dragging.</li>
+              <li><strong>Adding, removing, or reordering effects</strong> is disabled in Live mode. Use Emulation mode to design presets, then export/import.</li>
+              <li><strong>Preset switching</strong> syncs between app and hardware button.</li>
+              <li>The <strong>SSB effect</strong> may produce a tone at certain frequencies (device behavior).</li>
+            </ul>
+            <p><strong>Recommended workflow:</strong> Design presets in Emulation mode, then connect to transfer them to the device.</p>
+          </section>
+        </div>
       </div>
     </div>
 
     <!-- Footer -->
     <footer class="footer">
+
       <div class="footer__section">
-        <h4 class="footer__heading">about</h4>
-        <p class="footer__text">This is an unofficial preset editor for the Teenage Engineering EP–2350 Ting microphone. It allows you to create, edit, and export custom effect chains and modulation settings without using the official app.</p>
-      </div>
-      <div class="footer__section">
-        <h4 class="footer__heading">disclaimer</h4>
+        <h4 class="footer__heading">Disclaimer</h4>
         <p class="footer__text">If you happen to break the json file for some reason and the device freezes, don't panic. Simply connect to a computer and hold the green + white buttons during startup to access and fix the file. For any other questions, visit the <a href="https://teenage.engineering/guides/ep-2350" target="_blank" rel="noopener">official guide</a>.</p>
       </div>
       <div class="footer__credit">
-        a tiny tool by <a href="https://www.brunomarinho.com" target="_blank" rel="noopener">Bruno Marinho</a>
+        A tiny tool by <a href="https://www.brunomarinho.com" target="_blank" rel="noopener">Bruno Marinho</a>
       </div>
     </footer>
   </div>
