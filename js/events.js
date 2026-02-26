@@ -358,20 +358,25 @@ export function handleImport(e) {
     try {
       const config = JSON.parse(event.target.result);
 
-      // Validate structure
-      if (!config.presets || !Array.isArray(config.presets)) {
-        throw new Error('Invalid config format: missing presets array');
+      // Validate structure - must have presets, samples, or both
+      const hasPresets = config.presets && Array.isArray(config.presets);
+      const hasSamples = config.samples && Array.isArray(config.samples);
+      if (!hasPresets && !hasSamples) {
+        throw new Error('Invalid config format: missing presets or samples array');
       }
 
       // Load pack name
       appState.packName = config.name || 'MY PACK';
       document.getElementById('packName').value = appState.packName;
 
+      // Preserve custom sample pack if present in config
+      appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+
       // Clear existing presets
       appState.presets = [null, null, null, null];
 
       // Load presets
-      config.presets.forEach((preset) => {
+      (config.presets || []).forEach((preset) => {
         const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
         if (pos >= 0 && pos < 4) {
           let list = preset.list || [];
@@ -427,6 +432,11 @@ export function handleExport() {
     presets: []
   };
 
+  // Include custom sample pack if present
+  if (appState.samples) {
+    config.samples = appState.samples;
+  }
+
   appState.presets.forEach((preset, index) => {
     if (preset) {
       const exportPreset = {
@@ -473,6 +483,7 @@ export function handleReset() {
   appState.selectedSlot = 0;
   appState.selectedSample = 'singing';
   appState.presets = [null, null, null, null];
+  appState.samples = null;
 
   // Update UI
   document.getElementById('packName').value = appState.packName;
@@ -682,6 +693,9 @@ async function importPresetsFromDevice() {
     const devicePresets = [null, null, null, null];
     const packName = config.name || 'DEVICE PACK';
 
+    // Preserve custom sample pack from device config
+    appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+
     if (config.presets && Array.isArray(config.presets)) {
       config.presets.forEach((preset) => {
         const pos = preset.pos ?? 0;
@@ -772,6 +786,11 @@ export async function savePresetsToDevice() {
       name: appState.packName || 'MY PACK',
       presets: []
     };
+
+    // Include custom sample pack if present
+    if (appState.samples) {
+      config.samples = appState.samples;
+    }
 
     appState.presets.forEach((preset, index) => {
       if (preset) {

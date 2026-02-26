@@ -8,6 +8,7 @@ export function saveState() {
     selectedSlot: appState.selectedSlot,
     selectedSample: appState.selectedSample,
     presets: appState.presets,
+    samples: appState.samples,
     previewMode: appState.previewMode
   };
 
@@ -28,6 +29,7 @@ export function loadState() {
       if (typeof parsed.selectedSlot === 'number') appState.selectedSlot = parsed.selectedSlot;
       if (parsed.selectedSample) appState.selectedSample = parsed.selectedSample;
       if (parsed.presets) appState.presets = parsed.presets;
+      if (parsed.samples) appState.samples = parsed.samples;
       if (parsed.previewMode && Object.values(PreviewMode).includes(parsed.previewMode)) {
         appState.previewMode = parsed.previewMode;
       }

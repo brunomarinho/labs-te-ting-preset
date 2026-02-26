@@ -13,6 +13,8 @@ export const appState = {
   selectedSample: 'singing',
   isPlaying: false,
   presets: [null, null, null, null],
+  // Custom sample pack from imported config.json (preserved on export)
+  samples: null,
   // Hardware mode state
   previewMode: PreviewMode.EMULATION,
   // Track if presets have been modified since last import/export
