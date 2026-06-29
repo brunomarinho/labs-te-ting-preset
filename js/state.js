@@ -1,10 +1,21 @@
 import { createDefaultSampleConfig } from './effects.js';
+// (createDefaultSampleConfig kept for preset default, defaultCustomSamples is for the samples section)
 
 // Preview modes
 export const PreviewMode = {
   EMULATION: 'emulation',
   HARDWARE: 'hardware'
 };
+
+// Default custom samples structure (4 slots)
+export function defaultCustomSamples() {
+  return [
+    { file: '', playmode: 'oneshot' },
+    { file: '', playmode: 'oneshot' },
+    { file: '', playmode: 'oneshot' },
+    { file: '', playmode: 'oneshot' }
+  ];
+}
 
 // Application state
 export const appState = {
@@ -13,8 +24,9 @@ export const appState = {
   selectedSample: 'singing',
   isPlaying: false,
   presets: [null, null, null, null],
-  // Custom sample pack from imported config.json (preserved on export)
-  samples: null,
+  // Custom WAV samples (4 slots)
+  useCustomSamples: false,
+  customSamples: defaultCustomSamples(),
   // Hardware mode state
   previewMode: PreviewMode.EMULATION,
   // Track if presets have been modified since last import/export

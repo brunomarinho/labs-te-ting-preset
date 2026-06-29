@@ -101,7 +101,7 @@
 
     <!-- Pack Header -->
     <section class="section-heading">
-    <h3>Preset editor</h3>
+      <h3>Pack</h3>
       <div class="section-heading--right">
         <label class="btn btn--import">
           Import
@@ -124,6 +124,69 @@
         >
       </div>
       <button class="pack-header__clear" id="resetBtn">Reset</button>
+    </section>
+
+    <!-- Samples Section -->
+    <section class="samples-heading">
+      <h3>Samples</h3>
+      <div class="samples-heading__right">
+        <span class="samples-toggle-label">Custom WAV files</span>
+        <label class="toggle">
+          <input type="checkbox" id="useCustomSamplesToggle">
+          <span class="toggle__slider"></span>
+        </label>
+      </div>
+    </section>
+    <section class="samples-editor" id="samplesEditor" style="display:none">
+      <p class="samples-editor__hint">Place WAV files on the device's storage, then enter the filenames here. Built-in samples are used when disabled.</p>
+      <div class="samples-grid">
+        <div class="samples-grid__header">
+          <span>Slot</span>
+          <span>Filename (WAV)</span>
+          <span>Playmode</span>
+        </div>
+        <div class="sample-row" data-slot="0">
+          <span class="sample-row__slot">1</span>
+          <input type="text" class="input sample-row__file" data-slot="0" placeholder="e.g. kick.wav">
+          <select class="select sample-row__playmode" data-slot="0">
+            <option value="oneshot">oneshot</option>
+            <option value="hold">hold</option>
+            <option value="startstop">startstop</option>
+          </select>
+        </div>
+        <div class="sample-row" data-slot="1">
+          <span class="sample-row__slot">2</span>
+          <input type="text" class="input sample-row__file" data-slot="1" placeholder="e.g. snare.wav">
+          <select class="select sample-row__playmode" data-slot="1">
+            <option value="oneshot">oneshot</option>
+            <option value="hold">hold</option>
+            <option value="startstop">startstop</option>
+          </select>
+        </div>
+        <div class="sample-row" data-slot="2">
+          <span class="sample-row__slot">3</span>
+          <input type="text" class="input sample-row__file" data-slot="2" placeholder="e.g. loop.wav">
+          <select class="select sample-row__playmode" data-slot="2">
+            <option value="oneshot">oneshot</option>
+            <option value="hold">hold</option>
+            <option value="startstop">startstop</option>
+          </select>
+        </div>
+        <div class="sample-row" data-slot="3">
+          <span class="sample-row__slot">4</span>
+          <input type="text" class="input sample-row__file" data-slot="3" placeholder="e.g. fx.wav">
+          <select class="select sample-row__playmode" data-slot="3">
+            <option value="oneshot">oneshot</option>
+            <option value="hold">hold</option>
+            <option value="startstop">startstop</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Presets Header -->
+    <section class="presets-heading">
+      <h3>Presets</h3>
     </section>
 
     <!-- Preset Slots -->

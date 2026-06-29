@@ -1,5 +1,5 @@
 import { EFFECTS, createDefaultSampleConfig, SINGLE_INSTANCE_EFFECTS } from './effects.js';
-import { appState, ensurePreset, PreviewMode, markDirty, markClean } from './state.js';
+import { appState, ensurePreset, PreviewMode, markDirty, markClean, defaultCustomSamples } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
 import { tingUSB, ConnectionState, TingUSB } from './webusb.js';
@@ -8,6 +8,7 @@ import {
   renderPresetSlots,
   renderPresetEditor,
   renderModulationPanels,
+  renderSamplesEditor,
   updateModulationButtons,
   updateParamOptions,
   openEffectModal,
@@ -347,6 +348,13 @@ export function updateTrigger() {
   saveState();
 }
 
+// Custom sample slot update
+export function updateCustomSample(slot, field, value) {
+  appState.customSamples[slot][field] = value;
+  markDirty();
+  saveState();
+}
+
 // Import/Export handlers
 
 export function handleImport(e) {
@@ -369,8 +377,20 @@ export function handleImport(e) {
       appState.packName = config.name || 'MY PACK';
       document.getElementById('packName').value = appState.packName;
 
-      // Preserve custom sample pack if present in config
-      appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+      // Load custom samples if present in config
+      appState.customSamples = defaultCustomSamples();
+      if (config.samples && Array.isArray(config.samples) && config.samples.length > 0) {
+        appState.useCustomSamples = true;
+        config.samples.forEach((s, idx) => {
+          const pos = s.pos !== undefined ? s.pos : idx;
+          if (pos >= 0 && pos < 4) {
+            appState.customSamples[pos] = { file: s.file || '', playmode: s.playmode || 'oneshot' };
+          }
+        });
+      } else {
+        appState.useCustomSamples = false;
+      }
+      renderSamplesEditor();
 
       // Clear existing presets
       appState.presets = [null, null, null, null];
@@ -432,9 +452,14 @@ export function handleExport() {
     presets: []
   };
 
-  // Include custom sample pack if present
-  if (appState.samples) {
-    config.samples = appState.samples;
+  // Include custom samples if enabled and at least one file is set
+  if (appState.useCustomSamples) {
+    const samplesArr = appState.customSamples
+      .map((s, i) => ({ pos: i, file: s.file, playmode: s.playmode }))
+      .filter(s => s.file.trim() !== '');
+    if (samplesArr.length > 0) {
+      config.samples = samplesArr;
+    }
   }
 
   appState.presets.forEach((preset, index) => {
@@ -483,7 +508,9 @@ export function handleReset() {
   appState.selectedSlot = 0;
   appState.selectedSample = 'singing';
   appState.presets = [null, null, null, null];
-  appState.samples = null;
+  appState.useCustomSamples = false;
+  appState.customSamples = defaultCustomSamples();
+  renderSamplesEditor();
 
   // Update UI
   document.getElementById('packName').value = appState.packName;
@@ -693,8 +720,20 @@ async function importPresetsFromDevice() {
     const devicePresets = [null, null, null, null];
     const packName = config.name || 'DEVICE PACK';
 
-    // Preserve custom sample pack from device config
-    appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+    // Load custom samples from device config
+    appState.customSamples = defaultCustomSamples();
+    if (config.samples && Array.isArray(config.samples) && config.samples.length > 0) {
+      appState.useCustomSamples = true;
+      config.samples.forEach((s, idx) => {
+        const pos = s.pos !== undefined ? s.pos : idx;
+        if (pos >= 0 && pos < 4) {
+          appState.customSamples[pos] = { file: s.file || '', playmode: s.playmode || 'oneshot' };
+        }
+      });
+    } else {
+      appState.useCustomSamples = false;
+    }
+    renderSamplesEditor();
 
     if (config.presets && Array.isArray(config.presets)) {
       config.presets.forEach((preset) => {
@@ -787,9 +826,14 @@ export async function savePresetsToDevice() {
       presets: []
     };
 
-    // Include custom sample pack if present
-    if (appState.samples) {
-      config.samples = appState.samples;
+    // Include custom samples if enabled
+    if (appState.useCustomSamples) {
+      const samplesArr = appState.customSamples
+        .map((s, i) => ({ pos: i, file: s.file, playmode: s.playmode }))
+        .filter(s => s.file.trim() !== '');
+      if (samplesArr.length > 0) {
+        config.samples = samplesArr;
+      }
     }
 
     appState.presets.forEach((preset, index) => {
@@ -1149,4 +1193,27 @@ export function setupEventListeners() {
     stopSlotPolling();
     showToast('device disconnected unexpectedly - check USB connection', 'error');
   };
+
+  // ========================================
+  // Custom samples section
+  // ========================================
+
+  document.getElementById('useCustomSamplesToggle').addEventListener('change', (e) => {
+    appState.useCustomSamples = e.target.checked;
+    renderSamplesEditor();
+    markDirty();
+    saveState();
+  });
+
+  document.querySelectorAll('.sample-row__file').forEach(input => {
+    input.addEventListener('input', (e) => {
+      updateCustomSample(parseInt(e.target.dataset.slot), 'file', e.target.value);
+    });
+  });
+
+  document.querySelectorAll('.sample-row__playmode').forEach(select => {
+    select.addEventListener('change', (e) => {
+      updateCustomSample(parseInt(e.target.dataset.slot), 'playmode', e.target.value);
+    });
+  });
 }

@@ -1852,3 +1852,108 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ==============================================
+   SAMPLES EDITOR
+   ============================================== */
+
+.samples-toggle-label {
+  font-size: var(--text-sm);
+  color: var(--mid-gray);
+  margin-right: var(--space-sm);
+}
+
+.samples-editor {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.samples-editor__hint {
+  font-size: var(--text-sm);
+  color: var(--mid-gray);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.samples-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.samples-grid__header {
+  display: grid;
+  grid-template-columns: 2rem 1fr 8rem;
+  gap: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--mid-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 var(--space-xs);
+}
+
+.sample-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr 8rem;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.sample-row__slot {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--black);
+  text-align: center;
+}
+
+.sample-row .input {
+  height: 2.25rem;
+  font-size: var(--text-sm);
+}
+
+.sample-row .select {
+  height: 2.25rem;
+  font-size: var(--text-sm);
+}
+
+.samples-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-lg);
+}
+
+.samples-heading h3 {
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.samples-heading__right {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.presets-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-lg);
+}
+
+.presets-heading h3 {
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.app > .samples-heading  { animation: fadeInUp 0.5s var(--ease-out) 140ms both; }
+.app > .samples-editor   { animation: fadeInUp 0.5s var(--ease-out) 145ms both; }
+.app > .presets-heading  { animation: fadeInUp 0.5s var(--ease-out) 150ms both; }

@@ -6,7 +6,8 @@ import { setupEventListeners, setPreviewMode } from './events.js';
 import {
   renderEffectPicker,
   renderPresetSlots,
-  renderPresetEditor
+  renderPresetEditor,
+  renderSamplesEditor
 } from './ui.js';
 import { tingUSB } from './webusb.js';
 
@@ -24,6 +25,7 @@ function init() {
   renderEffectPicker();
   renderPresetSlots();
   renderPresetEditor();
+  renderSamplesEditor();
   setupEventListeners();
 
   // Apply saved preview mode (must be after setupEventListeners)
