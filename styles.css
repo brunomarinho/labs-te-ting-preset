@@ -85,6 +85,8 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
