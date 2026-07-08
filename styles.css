@@ -491,7 +491,8 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 .preset-slot__clear:not(:disabled):hover { color: var(--accent); }
 .preset-slot--active .preset-slot__clear { color: rgba(255, 255, 255, 0.6); }
 .preset-slot--active .preset-slot__clear:not(:disabled):hover { color: var(--white); }
-.preset-slot__clear:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Clear only appears when the slot has content (JS sets disabled on empty) */
+.preset-slot__clear:disabled { display: none; }
 
 
 /* ==============================================
@@ -882,7 +883,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 
 .help-content { display: flex; flex-direction: column; gap: var(--space-lg); }
 .help-section__title {
-  font-size: var(--text-title);
+  font-size: var(--text-base);
   font-weight: var(--font-bold);
   letter-spacing: 0.1px;
   text-transform: uppercase;
@@ -891,7 +892,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 }
 .help-section p { font-size: var(--text-base); margin-bottom: var(--space-xs); }
 .help-section strong { color: var(--ink); font-weight: var(--font-semibold); }
-.help-list { margin: var(--space-sm) 0 0 var(--space-md); font-size: var(--text-sm); color: var(--mid-gray); }
+.help-list { margin: var(--space-sm) var(--space-md); padding-bottom: var(--space-md);  }
 .help-list li { margin-bottom: var(--space-xs); }
 
 
