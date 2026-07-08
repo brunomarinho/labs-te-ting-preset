@@ -938,13 +938,6 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
    ============================================== */
 
 .hardware-mode .effect-card__drag { visibility: hidden; }
-.hardware-mode .btn--add:disabled {
-  opacity: 1;
-  background: transparent;
-  color: var(--mid-gray);
-  border: 1px dashed var(--border);
-}
-.hardware-mode .btn--add:disabled:hover { background: transparent; color: var(--mid-gray); transform: none; box-shadow: none; }
 .hardware-mode--no-edit .effect-card__delete { display: none; }
 
 
