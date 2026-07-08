@@ -182,11 +182,11 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   transition: all var(--duration-fast) var(--ease-out);
 }
 
+/* Keep identical box metrics across states so labels don't shift on toggle */
 .mode-toggle__btn--active,
 .sample-btn--active {
   background: var(--ink);
   color: var(--white);
-  padding: 0 12px;
 }
 
 
