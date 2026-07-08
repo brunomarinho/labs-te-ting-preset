@@ -226,7 +226,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   transition: all var(--duration-fast) var(--ease-out);
 }
 
-.btn:hover { transform: translateY(-1px); box-shadow: var(--float); }
+.btn:not(:disabled):not(.btn--mod-disabled):hover { transform: translateY(-1px); box-shadow: var(--float); }
 .btn:active { transform: none; box-shadow: none; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -240,8 +240,8 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   border-color: var(--ink);
 }
 .btn--add { min-width: 128px; }
-.btn--add:hover,
-.btn--primary:hover { background: var(--ink-press); }
+.btn--add:not(:disabled):hover,
+.btn--primary:not(:disabled):hover { background: var(--ink-press); }
 
 /* Accent = save-to-device */
 .btn--save-device {
@@ -249,7 +249,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   color: var(--white);
   border-color: var(--accent);
 }
-.btn--save-device:hover { background: var(--accent-hover); }
+.btn--save-device:not(:disabled):hover { background: var(--accent-hover); }
 
 .btn--connect--connected { border-color: var(--ink); }
 .btn--import { position: relative; overflow: hidden; }
@@ -330,7 +330,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out);
 }
-.play-btn:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--float); }
+.play-btn:not(:disabled):hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--float); }
 .play-btn:active { transform: none; box-shadow: none; }
 .play-btn__icon { display: inline-flex; align-items: center; }
 .play-btn--playing { background: var(--ink); }
@@ -431,7 +431,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-out);
 }
-.pack-header__clear:hover { color: var(--ink); }
+.pack-header__clear:not(:disabled):hover { color: var(--ink); }
 .pack-header__clear:disabled { opacity: 0.4; cursor: not-allowed; }
 
 
@@ -448,8 +448,8 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 .preset-slot {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: 14px;
+  gap: 4px;
+  padding: var(--space-md);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--white);
@@ -488,9 +488,9 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-out);
 }
-.preset-slot__clear:hover { color: var(--accent); }
+.preset-slot__clear:not(:disabled):hover { color: var(--accent); }
 .preset-slot--active .preset-slot__clear { color: rgba(255, 255, 255, 0.6); }
-.preset-slot--active .preset-slot__clear:hover { color: var(--white); }
+.preset-slot--active .preset-slot__clear:not(:disabled):hover { color: var(--white); }
 .preset-slot__clear:disabled { opacity: 0.4; cursor: not-allowed; }
 
 
@@ -618,7 +618,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-out);
 }
-.effect-card__delete:hover { color: var(--accent); }
+.effect-card__delete:not(:disabled):hover { color: var(--accent); }
 
 .effect-card__drag {
   color: var(--dim);
@@ -882,14 +882,14 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 
 .help-content { display: flex; flex-direction: column; gap: var(--space-lg); }
 .help-section__title {
-  font-size: var(--text-xs);
+  font-size: var(--text-title);
   font-weight: var(--font-bold);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1px;
   text-transform: uppercase;
   margin-bottom: var(--space-sm);
   color: var(--ink);
 }
-.help-section p { font-size: var(--text-sm); color: var(--mid-gray); margin-bottom: var(--space-xs); }
+.help-section p { font-size: var(--text-base); margin-bottom: var(--space-xs); }
 .help-section strong { color: var(--ink); font-weight: var(--font-semibold); }
 .help-list { margin: var(--space-sm) 0 0 var(--space-md); font-size: var(--text-sm); color: var(--mid-gray); }
 .help-list li { margin-bottom: var(--space-xs); }
