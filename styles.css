@@ -87,7 +87,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+  text-wrap: pretty;
 }
+
+/* Balance short/heading text; body text stays pretty (set on body) */
+h1, h2, h3, h4,
+.section-title { text-wrap: balance; }
 
 a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 ::placeholder { color: var(--mid-gray); }
@@ -920,7 +925,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   color: var(--mid-gray);
   margin-bottom: var(--space-xs);
 }
-.footer__text { font-size: var(--text-sm); line-height: 1.5; color: var(--mid-gray); max-width: 60ch; }
+.footer__text { font-size: var(--text-sm); line-height: 1.5; color: var(--mid-gray); }
 .footer__text a { color: var(--mid-gray); text-decoration: underline; }
 .footer__credit { font-size: var(--text-sm); color: var(--mid-gray); }
 .footer__credit a { color: var(--ink); font-weight: var(--font-semibold); text-decoration: none; border-bottom: 1px solid var(--dim); }
