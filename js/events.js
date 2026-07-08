@@ -1004,6 +1004,13 @@ export function setupEventListeners() {
 
       updateEffectParam(index, param, value);
 
+      // Update slider fill position (design only)
+      const sMin = parseFloat(e.target.min);
+      const sMax = parseFloat(e.target.max);
+      if (sMax > sMin) {
+        e.target.style.setProperty('--pct', `${((value - sMin) / (sMax - sMin)) * 100}%`);
+      }
+
       // Update display value
       const valueEl = document.getElementById(`value-${index}-${param}`);
       if (valueEl) {

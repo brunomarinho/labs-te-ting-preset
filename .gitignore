@@ -6,3 +6,5 @@ CLAUDE.md
 
 # Dependencies
 node_modules/
+.superpowers/
+.gstack/

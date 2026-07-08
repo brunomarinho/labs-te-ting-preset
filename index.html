@@ -32,6 +32,11 @@
   <!-- Theme Color -->
   <meta name="theme-color" content="#FE671D">
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Scripts & Styles -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -99,15 +104,23 @@
       </div>
     </section>
 
-    <!-- Pack Header -->
+    <!-- Editor Panel -->
+    <div class="editor-panel">
+
+    <!-- Group: Preset editor -->
+    <div class="editor-group">
     <section class="section-heading">
-    <h3>Preset editor</h3>
+      <h3 class="section-title">Preset editor</h3>
       <div class="section-heading--right">
         <label class="btn btn--import">
+          <svg class="btn__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
           Import
           <input type="file" id="importFile" accept=".json" hidden>
         </label>
-        <button class="btn" id="exportBtn">Export</button>
+        <button class="btn" id="exportBtn">
+          <svg class="btn__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5"/><path d="M5 3h14"/></svg>
+          Export
+        </button>
       </div>
     </section>
 
@@ -120,7 +133,7 @@
           class="pack-header__name"
           id="packName"
           value="MY PACK"
-          placeholder="pack name"
+          placeholder="Pack name"
         >
       </div>
       <button class="pack-header__clear" id="resetBtn">Reset</button>
@@ -149,29 +162,40 @@
         <button class="preset-slot__clear" data-slot="3">Clear</button>
       </div>
     </section>
+    </div>
 
-    <!-- Effect Chain Editor -->
-    <section class="editor">
+    <!-- Group: Effect chain -->
+    <div class="editor-group">
+      <div class="section-heading">
+        <h3 class="section-title">Effect chain</h3>
+        <div class="section-heading--right">
+          <button class="btn btn--add" id="addEffectBtn">
+            <svg class="btn__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add effect
+          </button>
+        </div>
+      </div>
+
       <!-- Preset Meta -->
       <div class="preset-meta">
         <div class="form-group">
           <label for="presetName">Name</label>
-          <input type="text" id="presetName" placeholder="preset name" class="input">
+          <input type="text" id="presetName" placeholder="Preset name" class="input">
         </div>
         <div class="form-group">
-          <label for="presetComment">Comment</label>
-          <input type="text" id="presetComment" placeholder="description" class="input">
+          <label for="presetComment">Description</label>
+          <input type="text" id="presetComment" placeholder="Description" class="input">
         </div>
       </div>
 
       <!-- Effect Chain -->
-      <h3 class="section-title">Effect chain</h3>
       <div class="effect-list" id="effectList">
         <!-- Effects will be rendered here -->
       </div>
-      <button class="btn btn--add" id="addEffectBtn">+ Add effect</button>
+    </div>
 
-      <!-- Modulation Panels -->
+    <!-- Group: Modulation -->
+    <div class="editor-group">
       <h3 class="section-title">Modulation</h3>
       <div class="modulation-panels">
         <!-- Handle Modulation -->
@@ -291,7 +315,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    </div>
+    <!-- /Editor Panel -->
 
     <!-- Effect Picker Modal -->
     <div class="modal" id="effectModal">
@@ -380,7 +407,7 @@
         <p class="footer__text">If you happen to break the json file for some reason and the device freezes, don't panic. Simply connect to a computer and hold the green + white buttons during startup to access and fix the file. For any other questions, visit the <a href="https://teenage.engineering/guides/ep-2350" target="_blank" rel="noopener">official guide</a>.</p>
       </div>
       <div class="footer__credit">
-        A tiny tool by <a href="https://www.brunomarinho.com" target="_blank" rel="noopener">Bruno Marinho</a>
+        Made by <a href="https://www.supervisedmusic.com" target="_blank" rel="noopener">Supervised</a>
       </div>
     </footer>
   </div>

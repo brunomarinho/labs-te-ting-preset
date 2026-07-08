@@ -21,6 +21,11 @@ export function renderEffectCard(effectConfig, index) {
         ? Math.round(value)
         : value.toFixed(2);
 
+      // Visual fill position for the slider track (design only)
+      const pct = paramDef.max > paramDef.min
+        ? ((value - paramDef.min) / (paramDef.max - paramDef.min)) * 100
+        : 0;
+
       return `
         <div class="param-control">
           <div class="param-control__header">
@@ -30,6 +35,7 @@ export function renderEffectCard(effectConfig, index) {
           <input
             type="range"
             class="param-control__slider"
+            style="--pct: ${pct}%"
             data-effect-index="${index}"
             data-param="${paramName}"
             min="${paramDef.min}"
@@ -67,7 +73,7 @@ export function renderEffectList() {
   const preset = appState.presets[appState.selectedSlot];
 
   if (!preset || !preset.list || preset.list.length === 0) {
-    effectList.innerHTML = '<div class="effect-list--empty">no effects - add one below</div>';
+    effectList.innerHTML = '<div class="effect-list--empty">No effects</div>';
     return;
   }
 
@@ -79,7 +85,7 @@ export function renderEffectList() {
   ).join('');
 
   if (hasOnlyMicIn) {
-    effectList.innerHTML += '<div class="effect-list--hint">add effects above to process the audio</div>';
+    effectList.innerHTML += '<div class="effect-list--hint">Add effects above to process the audio</div>';
   }
 
   // Initialize SortableJS
@@ -94,7 +100,7 @@ export function renderPresetSlots() {
     const preset = appState.presets[i];
 
     slot.classList.toggle('preset-slot--active', i === appState.selectedSlot);
-    nameEl.textContent = preset ? preset.name || '' : 'empty';
+    nameEl.textContent = preset ? preset.name || '' : 'Empty';
 
     // Disable clear button if slot is empty
     if (clearBtn) {
@@ -158,7 +164,7 @@ export function renderModulationPanels() {
   ['handle', 'shake', 'lfo', 'trigger'].forEach(modType => {
     const rowSelect = document.getElementById(`${modType}Row`);
     if (rowSelect) {
-      rowSelect.innerHTML = rowOptions || '<option value="">no effects</option>';
+      rowSelect.innerHTML = rowOptions || '<option value="">No effects</option>';
     }
   });
 
@@ -236,7 +242,7 @@ export function updateParamOptions(modType, rowIndex) {
   const paramSelect = document.getElementById(`${modType}Param`);
 
   if (!effect || !EFFECTS[effect.effect]) {
-    paramSelect.innerHTML = '<option value="">no parameters</option>';
+    paramSelect.innerHTML = '<option value="">No parameters</option>';
     return;
   }
 
