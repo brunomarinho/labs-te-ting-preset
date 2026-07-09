@@ -743,10 +743,12 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 }
 
 .mod-panel__chevron {
-  color: var(--mid-gray);
-  font-size: var(--text-2xs);
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink);
   transition: transform var(--duration-base) var(--ease-out);
 }
+.mod-panel__chevron svg { display: block; }
 .mod-panel--open .mod-panel__chevron { transform: rotate(180deg); }
 
 .mod-panel__content { display: none; padding: 0 var(--space-md) 14px; }
