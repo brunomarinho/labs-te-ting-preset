@@ -968,8 +968,21 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 @media (max-width: 640px) {
   .app { padding: var(--space-xl) var(--space-md) var(--space-xl); }
   .header { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
-  .header__right { width: 100%; justify-content: space-between; }
+  .header__right { width: 100%; }
+
+  /* Full-width segmented controls (header toggle + voice preview) */
+  .mode-toggle,
+  .audio-source__samples { display: flex; width: 100%; }
+  .mode-toggle__btn,
+  .sample-btn { flex: 1; }
+
+  /* Audio source stacks; each control fills the row */
   .audio-source__emulation, .audio-source__hardware { flex-direction: column; align-items: stretch; }
+  .audio-source__group { width: 100%; }
+  .audio-source__controls { width: 100%; }
+  .btn--mod { flex: 1; }
+  .play-btn { width: 100%; justify-content: center; }
+
   .preset-slots { grid-template-columns: repeat(2, 1fr); }
   .preset-meta { flex-direction: column; }
   .effect-picker { grid-template-columns: 1fr; }
