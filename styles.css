@@ -476,6 +476,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 .preset-slot--active .preset-slot__name { color: var(--white); }
 
 .preset-slot__clear {
+  align-self: flex-start; /* hug text so the hit area isn't the full slot width */
   margin-top: var(--space-xs);
   background: none;
   border: 0;
