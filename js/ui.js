@@ -345,6 +345,24 @@ export function initSortable() {
   });
 }
 
+// Samples editor — reflects appState.useCustomSamples / customSamples into the DOM
+export function renderSamplesEditor() {
+  const toggle = document.getElementById('useCustomSamplesToggle');
+  const editor = document.getElementById('samplesEditor');
+  if (!toggle || !editor) return;
+
+  toggle.checked = appState.useCustomSamples;
+  editor.style.display = appState.useCustomSamples ? 'flex' : 'none';
+  if (!appState.useCustomSamples) return;
+
+  appState.customSamples.forEach((sample, i) => {
+    const fileInput = document.querySelector(`.sample-row__file[data-slot="${i}"]`);
+    const playmodeSelect = document.querySelector(`.sample-row__playmode[data-slot="${i}"]`);
+    if (fileInput) fileInput.value = sample.file;
+    if (playmodeSelect) playmodeSelect.value = sample.playmode;
+  });
+}
+
 // Modal functions
 export function openEffectModal() {
   renderEffectPicker(); // Re-render to update disabled states

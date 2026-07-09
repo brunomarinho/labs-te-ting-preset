@@ -317,6 +317,61 @@
       </div>
     </div>
 
+    <!-- Group: Samples -->
+    <div class="editor-group">
+      <div class="section-heading">
+        <h3 class="section-title">Samples</h3>
+        <div class="samples-toggle">
+          <span class="samples-toggle__label">Custom WAV files</span>
+          <label class="toggle">
+            <input type="checkbox" id="useCustomSamplesToggle">
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="samples-editor" id="samplesEditor" style="display:none">
+        <p class="samples-editor__hint">Place WAV files on the device's storage, then enter the filenames here. Built-in samples are used when disabled.</p>
+        <div class="samples-list">
+          <div class="sample-row" data-slot="0">
+            <span class="sample-row__slot">1</span>
+            <input type="text" class="input sample-row__file" data-slot="0" placeholder="e.g. kick.wav" aria-label="Sample 1 filename">
+            <select class="select sample-row__playmode" data-slot="0" aria-label="Sample 1 playmode">
+              <option value="oneshot">oneshot</option>
+              <option value="hold">hold</option>
+              <option value="startstop">startstop</option>
+            </select>
+          </div>
+          <div class="sample-row" data-slot="1">
+            <span class="sample-row__slot">2</span>
+            <input type="text" class="input sample-row__file" data-slot="1" placeholder="e.g. snare.wav" aria-label="Sample 2 filename">
+            <select class="select sample-row__playmode" data-slot="1" aria-label="Sample 2 playmode">
+              <option value="oneshot">oneshot</option>
+              <option value="hold">hold</option>
+              <option value="startstop">startstop</option>
+            </select>
+          </div>
+          <div class="sample-row" data-slot="2">
+            <span class="sample-row__slot">3</span>
+            <input type="text" class="input sample-row__file" data-slot="2" placeholder="e.g. loop.wav" aria-label="Sample 3 filename">
+            <select class="select sample-row__playmode" data-slot="2" aria-label="Sample 3 playmode">
+              <option value="oneshot">oneshot</option>
+              <option value="hold">hold</option>
+              <option value="startstop">startstop</option>
+            </select>
+          </div>
+          <div class="sample-row" data-slot="3">
+            <span class="sample-row__slot">4</span>
+            <input type="text" class="input sample-row__file" data-slot="3" placeholder="e.g. fx.wav" aria-label="Sample 4 filename">
+            <select class="select sample-row__playmode" data-slot="3" aria-label="Sample 4 playmode">
+              <option value="oneshot">oneshot</option>
+              <option value="hold">hold</option>
+              <option value="startstop">startstop</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
     </div>
     <!-- /Editor Panel -->
 

@@ -1,5 +1,5 @@
 import { EFFECTS, createDefaultSampleConfig, SINGLE_INSTANCE_EFFECTS } from './effects.js';
-import { appState, ensurePreset, PreviewMode, markDirty, markClean } from './state.js';
+import { appState, ensurePreset, PreviewMode, markDirty, markClean, defaultCustomSamples, applyCustomSamplesFromConfig, customSamplesToConfig } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
 import { tingUSB, ConnectionState, TingUSB } from './webusb.js';
@@ -8,6 +8,7 @@ import {
   renderPresetSlots,
   renderPresetEditor,
   renderModulationPanels,
+  renderSamplesEditor,
   updateModulationButtons,
   updateParamOptions,
   openEffectModal,
@@ -347,6 +348,13 @@ export function updateTrigger() {
   saveState();
 }
 
+// Custom sample slot update
+export function updateCustomSample(slot, field, value) {
+  appState.customSamples[slot][field] = value;
+  markDirty();
+  saveState();
+}
+
 // Import/Export handlers
 
 export function handleImport(e) {
@@ -369,8 +377,9 @@ export function handleImport(e) {
       appState.packName = config.name || 'MY PACK';
       document.getElementById('packName').value = appState.packName;
 
-      // Preserve custom sample pack if present in config
-      appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+      // Load custom WAV samples from config
+      applyCustomSamplesFromConfig(config);
+      renderSamplesEditor();
 
       // Clear existing presets
       appState.presets = [null, null, null, null];
@@ -432,10 +441,9 @@ export function handleExport() {
     presets: []
   };
 
-  // Include custom sample pack if present
-  if (appState.samples) {
-    config.samples = appState.samples;
-  }
+  // Include custom WAV samples if enabled
+  const exportSamples = customSamplesToConfig();
+  if (exportSamples) config.samples = exportSamples;
 
   appState.presets.forEach((preset, index) => {
     if (preset) {
@@ -483,7 +491,9 @@ export function handleReset() {
   appState.selectedSlot = 0;
   appState.selectedSample = 'singing';
   appState.presets = [null, null, null, null];
-  appState.samples = null;
+  appState.useCustomSamples = false;
+  appState.customSamples = defaultCustomSamples();
+  renderSamplesEditor();
 
   // Update UI
   document.getElementById('packName').value = appState.packName;
@@ -693,8 +703,9 @@ async function importPresetsFromDevice() {
     const devicePresets = [null, null, null, null];
     const packName = config.name || 'DEVICE PACK';
 
-    // Preserve custom sample pack from device config
-    appState.samples = config.samples && Array.isArray(config.samples) ? config.samples : null;
+    // Load custom WAV samples from device config
+    applyCustomSamplesFromConfig(config);
+    renderSamplesEditor();
 
     if (config.presets && Array.isArray(config.presets)) {
       config.presets.forEach((preset) => {
@@ -787,10 +798,9 @@ export async function savePresetsToDevice() {
       presets: []
     };
 
-    // Include custom sample pack if present
-    if (appState.samples) {
-      config.samples = appState.samples;
-    }
+    // Include custom WAV samples if enabled
+    const deviceSamples = customSamplesToConfig();
+    if (deviceSamples) config.samples = deviceSamples;
 
     appState.presets.forEach((preset, index) => {
       if (preset) {
@@ -1156,4 +1166,22 @@ export function setupEventListeners() {
     stopSlotPolling();
     showToast('device disconnected unexpectedly - check USB connection', 'error');
   };
+
+  // ---- Custom samples section ----
+  document.getElementById('useCustomSamplesToggle').addEventListener('change', (ev) => {
+    appState.useCustomSamples = ev.target.checked;
+    renderSamplesEditor();
+    markDirty();
+    saveState();
+  });
+  document.querySelectorAll('.sample-row__file').forEach(input => {
+    input.addEventListener('input', (ev) => {
+      updateCustomSample(parseInt(ev.target.dataset.slot), 'file', ev.target.value);
+    });
+  });
+  document.querySelectorAll('.sample-row__playmode').forEach(select => {
+    select.addEventListener('change', (ev) => {
+      updateCustomSample(parseInt(ev.target.dataset.slot), 'playmode', ev.target.value);
+    });
+  });
 }

@@ -1,5 +1,5 @@
 // Main application entry point
-import { appState, PreviewMode } from './state.js';
+import { appState, PreviewMode, applyCustomSamplesFromConfig } from './state.js';
 import { createDefaultSampleConfig } from './effects.js';
 import { audioEngine } from './audio-engine.js';
 import { loadState, saveState } from './storage.js';
@@ -8,7 +8,8 @@ import { setupEventListeners, setPreviewMode } from './events.js';
 import {
   renderEffectPicker,
   renderPresetSlots,
-  renderPresetEditor
+  renderPresetEditor,
+  renderSamplesEditor
 } from './ui.js';
 import { tingUSB } from './webusb.js';
 
@@ -18,7 +19,7 @@ window.tingUSB = tingUSB;
 // Seed appState from a config.json-shaped pack (first-run default)
 function applyConfigToState(config) {
   appState.packName = config.name || 'MY PACK';
-  appState.samples = Array.isArray(config.samples) ? config.samples : null;
+  applyCustomSamplesFromConfig(config);
   appState.presets = [null, null, null, null];
   (config.presets || []).forEach((preset) => {
     const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
@@ -57,6 +58,7 @@ function init() {
   renderEffectPicker();
   renderPresetSlots();
   renderPresetEditor();
+  renderSamplesEditor();
   setupEventListeners();
 
   // Apply saved preview mode (must be after setupEventListeners)
