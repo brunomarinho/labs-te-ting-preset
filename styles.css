@@ -333,6 +333,8 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 .play-btn:not(:disabled):hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--float); }
 .play-btn:active { transform: none; box-shadow: none; }
 .play-btn__icon { display: inline-flex; align-items: center; }
+/* Play/stop glyphs at 75% (14px -> 10.5px), aspect ratio preserved */
+.play-btn__icon svg { height: 10.5px; width: auto; }
 .play-btn--playing { background: var(--ink); }
 .play-btn--playing:hover { background: var(--ink-press); }
 
