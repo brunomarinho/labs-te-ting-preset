@@ -1,7 +1,9 @@
 // Main application entry point
 import { appState, PreviewMode } from './state.js';
+import { createDefaultSampleConfig } from './effects.js';
 import { audioEngine } from './audio-engine.js';
-import { loadState } from './storage.js';
+import { loadState, saveState } from './storage.js';
+import { DEFAULT_PACK } from './default-preset.js';
 import { setupEventListeners, setPreviewMode } from './events.js';
 import {
   renderEffectPicker,
@@ -13,9 +15,40 @@ import { tingUSB } from './webusb.js';
 // Expose tingUSB to window for console debugging
 window.tingUSB = tingUSB;
 
+// Seed appState from a config.json-shaped pack (first-run default)
+function applyConfigToState(config) {
+  appState.packName = config.name || 'MY PACK';
+  appState.samples = Array.isArray(config.samples) ? config.samples : null;
+  appState.presets = [null, null, null, null];
+  (config.presets || []).forEach((preset) => {
+    const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
+    if (pos >= 0 && pos < 4) {
+      const list = preset.list || [];
+      if (!list.some(e => e.effect === 'SAMPLE')) {
+        list.push(createDefaultSampleConfig());
+      }
+      appState.presets[pos] = {
+        name: preset.name || '',
+        comment: preset.comment || '',
+        list,
+        handle: preset.handle || null,
+        shake: preset.shake || null,
+        lfo: preset.lfo || null,
+        trigger: preset.trigger || null
+      };
+    }
+  });
+  appState.selectedSlot = 0;
+}
+
 function init() {
-  // Load saved state first
-  loadState();
+  // Load saved state; if nothing is saved (first run), seed the default pack
+  const hadSavedState = loadState();
+  if (!hadSavedState) {
+    applyConfigToState(DEFAULT_PACK);
+    document.getElementById('packName').value = appState.packName;
+    saveState();
+  }
 
   // Update sample button UI
   document.getElementById('singSampleBtn').classList.toggle('sample-btn--active', appState.selectedSample === 'singing');
