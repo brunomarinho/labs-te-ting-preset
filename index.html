@@ -425,6 +425,7 @@
             <h4 class="help-section__title">Building Presets</h4>
             <p>Click <strong>+ Add Effect</strong> to add effects to your chain. Drag to reorder. Each preset can have up to 16 effects.</p>
             <p>Some effects (Delay, Reverb, Harmony, SSB) can only be used once per preset.</p>
+            <p><strong>Routing:</strong> Set an effect to <strong>Bus 1</strong> or <strong>Bus 2</strong> to place it on a parallel path instead of the main chain. Routing is saved to the device but isn't simulated in the preview, and results can be unexpected. Test on the device at low volume.</p>
           </section>
           <section class="help-section">
             <h4 class="help-section__title">Modulation</h4>
@@ -443,7 +444,7 @@
             <p>The device communicates via a <strong>MicroPython REPL</strong> interface, which has inherent limitations:</p>
             <ul class="help-list">
               <li><strong>Parameter tweaking</strong> is sent to the device when you release the slider, not during dragging.</li>
-              <li><strong>Adding, removing, or reordering effects</strong> is disabled in Live mode. Use Emulation mode to design presets, then export/import.</li>
+              <li><strong>Adding, removing, reordering, or routing effects</strong> is disabled in Live mode. Use Emulation mode to design presets, then export/import.</li>
               <li><strong>Preset switching</strong> syncs between app and hardware button.</li>
               <li>The <strong>SSB effect</strong> may produce a tone at certain frequencies (device behavior).</li>
             </ul>
