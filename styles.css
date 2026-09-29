@@ -633,6 +633,64 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 }
 .effect-card__drag:active { cursor: grabbing; }
 
+/* "bus 1" tag next to the name — routing hint */
+.effect-card__bus {
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--white);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* Bus cards get an accent stripe on the left edge */
+.effect-card--bus { box-shadow: inset 3px 0 0 var(--accent); }
+
+/* Routing row: compact MAIN | BUS 1 | BUS 2 segmented control */
+.bus-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.bus-control__label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+}
+.bus-toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-xs);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+}
+.bus-toggle__btn {
+  height: 20px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-full);
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.bus-toggle__btn--active { background: var(--ink); color: var(--white); }
+.bus-toggle__btn:disabled { color: var(--dim); cursor: not-allowed; }
+.bus-control__note { font-size: var(--text-2xs); color: var(--mid-gray); }
+
 .effect-card__params {
   display: flex;
   flex-wrap: wrap;
@@ -956,6 +1014,7 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
 
 .hardware-mode .effect-card__drag { visibility: hidden; }
 .hardware-mode--no-edit .effect-card__delete { display: none; }
+.hardware-mode--no-edit .bus-toggle { opacity: 0.4; pointer-events: none; }
 
 
 /* ==============================================
@@ -991,6 +1050,9 @@ a { color: var(--ink); transition: color var(--duration-fast) var(--ease-out); }
   .preset-slots { grid-template-columns: repeat(2, 1fr); }
   .preset-meta { flex-direction: column; }
   .effect-picker { grid-template-columns: 1fr; }
+
+  /* Header tag would collide with the centered "remove effect" label */
+  .effect-card__bus { display: none; }
 }
 
 

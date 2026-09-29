@@ -1,4 +1,5 @@
 import { appState, PreviewMode } from './state.js';
+import { sanitizeBusValues } from './effects.js';
 
 const STORAGE_KEY = 'ting-preset-editor-state';
 
@@ -29,7 +30,10 @@ export function loadState() {
       if (parsed.packName) appState.packName = parsed.packName;
       if (typeof parsed.selectedSlot === 'number') appState.selectedSlot = parsed.selectedSlot;
       if (parsed.selectedSample) appState.selectedSample = parsed.selectedSample;
-      if (parsed.presets) appState.presets = parsed.presets;
+      if (parsed.presets) {
+        appState.presets = parsed.presets;
+        appState.presets.forEach(p => p && sanitizeBusValues(p.list));
+      }
       if (typeof parsed.useCustomSamples === 'boolean') appState.useCustomSamples = parsed.useCustomSamples;
       if (Array.isArray(parsed.customSamples)) appState.customSamples = parsed.customSamples;
       if (parsed.previewMode && Object.values(PreviewMode).includes(parsed.previewMode)) {

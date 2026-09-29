@@ -1,4 +1,4 @@
-import { EFFECTS, createDefaultSampleConfig, SINGLE_INSTANCE_EFFECTS } from './effects.js';
+import { EFFECTS, createDefaultSampleConfig, SINGLE_INSTANCE_EFFECTS, MAX_EFFECTS_PER_PRESET, BUS_VALUES, sanitizeBusValues } from './effects.js';
 import { appState, ensurePreset, PreviewMode, markDirty, markClean, defaultCustomSamples, applyCustomSamplesFromConfig, customSamplesToConfig } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
@@ -161,6 +161,14 @@ export function addEffect(effectName) {
   const preset = appState.presets[appState.selectedSlot];
   const effectDef = EFFECTS[effectName];
 
+  // Device parses at most 16 rows; MIC IN is appended below if missing
+  const hasSampleRow = preset.list.some(e => e.effect === 'SAMPLE');
+  const rowsAfterAdd = preset.list.length + 1 + (hasSampleRow ? 0 : 1);
+  if (rowsAfterAdd > MAX_EFFECTS_PER_PRESET) {
+    showToast(`a preset can hold at most ${MAX_EFFECTS_PER_PRESET} effects`, 'error');
+    return;
+  }
+
   // Check if this is a single-instance effect that's already in the chain
   if (SINGLE_INSTANCE_EFFECTS.includes(effectName)) {
     const alreadyExists = preset.list.some(e => e.effect === effectName);
@@ -243,6 +251,27 @@ export function removeEffect(index) {
   }
 
   audioEngine.buildChain(preset);
+  markDirty();
+  saveState();
+}
+
+// Route an effect to the main path (bus = null) or a parallel BUS (1/2).
+// Structural edit: config.json only, never sent live (fx.param with BUS freezes the device).
+export function setEffectBus(index, bus) {
+  if (appState.previewMode === PreviewMode.HARDWARE) return;
+
+  const preset = appState.presets[appState.selectedSlot];
+  const effectConfig = preset?.list?.[index];
+  // MIC IN can only be cleared back to main (never newly routed)
+  if (!effectConfig || (effectConfig.effect === 'SAMPLE' && bus !== null)) return;
+
+  if (BUS_VALUES.includes(bus)) {
+    effectConfig.BUS = bus;
+  } else {
+    delete effectConfig.BUS;
+  }
+
+  renderEffectList();
   markDirty();
   saveState();
 }
@@ -388,7 +417,7 @@ export function handleImport(e) {
       (config.presets || []).forEach((preset) => {
         const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
         if (pos >= 0 && pos < 4) {
-          let list = preset.list || [];
+          let list = sanitizeBusValues(preset.list || []);
 
           // Ensure MIC IN (SAMPLE) exists - add at end if missing
           const hasSample = list.some(e => e.effect === 'SAMPLE');
@@ -711,7 +740,7 @@ async function importPresetsFromDevice() {
       config.presets.forEach((preset) => {
         const pos = preset.pos ?? 0;
         if (pos >= 0 && pos < 4) {
-          let list = preset.list || [];
+          let list = sanitizeBusValues(preset.list || []);
 
           // Ensure MIC IN (SAMPLE) exists - add at end if missing
           const hasSample = list.some(e => e.effect === 'SAMPLE');
@@ -833,8 +862,7 @@ export async function savePresetsToDevice() {
 
     // Reload the current preset on device and update LED
     try {
-      await tingUSB.loadPreset(appState.selectedSlot);
-      await tingUSB.updateLED(appState.selectedSlot);
+      await tingUSB.selectSlot(appState.selectedSlot);
     } catch (err) {
       console.warn('[Events] Could not reload preset after save:', err);
     }
@@ -1001,6 +1029,13 @@ export function setupEventListeners() {
     const deleteBtn = e.target.closest('.effect-card__delete');
     if (deleteBtn) {
       removeEffect(parseInt(deleteBtn.dataset.index));
+      return;
+    }
+
+    const busBtn = e.target.closest('.bus-toggle__btn');
+    if (busBtn && !busBtn.disabled) {
+      const bus = busBtn.dataset.bus ? parseInt(busBtn.dataset.bus) : null;
+      setEffectBus(parseInt(busBtn.dataset.index), bus);
     }
   });
 

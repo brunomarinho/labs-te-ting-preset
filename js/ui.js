@@ -1,4 +1,4 @@
-import { EFFECTS, getEffectDisplayName, SINGLE_INSTANCE_EFFECTS } from './effects.js';
+import { EFFECTS, getEffectDisplayName, SINGLE_INSTANCE_EFFECTS, BUS_VALUES } from './effects.js';
 import { appState } from './state.js';
 import { audioEngine } from './audio-engine.js';
 import { saveState } from './storage.js';
@@ -48,22 +48,47 @@ export function renderEffectCard(effectConfig, index) {
     }).join('');
   }
 
+  // Parallel routing (BUS). Not offered on MIC IN (SAMPLE) unless an imported
+  // config already routes it, so the user can still set it back to main.
+  const bus = BUS_VALUES.includes(effectConfig.BUS) ? effectConfig.BUS : null;
+  const busTag = bus ? `<span class="effect-card__bus">bus ${bus}</span>` : '';
+  const busHtml = isSample && !bus ? '' : `
+    <div class="bus-control">
+      <span class="bus-control__label">routing</span>
+      <div class="bus-toggle" role="group" aria-label="Routing for row ${index}">
+        ${[null, ...BUS_VALUES].map(value => `
+          <button
+            type="button"
+            class="bus-toggle__btn ${value === bus ? 'bus-toggle__btn--active' : ''}"
+            data-index="${index}"
+            data-bus="${value ?? ''}"
+            aria-pressed="${value === bus}"
+            ${isSample && value !== null && value !== bus ? 'disabled' : ''}
+          >${value ? `bus ${value}` : 'main'}</button>
+        `).join('')}
+      </div>
+      ${bus ? '<span class="bus-control__note">not simulated in preview — test on device at low volume</span>' : ''}
+    </div>
+  `;
+
   // MIC IN (SAMPLE) cannot be deleted
   const deleteBtn = isSample
     ? ''
     : `<button class="effect-card__delete" data-index="${index}">remove effect</button>`;
 
   return `
-    <div class="effect-card ${isSample ? 'effect-card--sample' : ''}" data-index="${index}">
+    <div class="effect-card ${isSample ? 'effect-card--sample' : ''} ${bus ? 'effect-card--bus' : ''}" data-index="${index}">
       <div class="effect-card__header">
         <div class="effect-card__left">
           <span class="effect-card__row">${index}</span>
           <span class="effect-card__name">${displayName}</span>
+          ${busTag}
         </div>
         ${deleteBtn}
         <span class="effect-card__drag">&#9776;</span>
       </div>
       ${paramsHtml ? `<div class="effect-card__params">${paramsHtml}</div>` : ''}
+      ${busHtml}
     </div>
   `;
 }

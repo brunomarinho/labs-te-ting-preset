@@ -66,6 +66,28 @@ export const EFFECTS = {
   }
 };
 
+// Device parses at most 16 rows per preset (MIC IN included)
+export const MAX_EFFECTS_PER_PRESET = 16;
+
+// Parallel routing buses (EP-2350 guide §7.10). Absent key = main path.
+export const BUS_VALUES = [1, 2];
+
+// Keep BUS only when it is 1 or 2 (numeric or numeric string); drop anything else
+// so invalid values never reach the device. Mutates and returns the list.
+export function sanitizeBusValues(list) {
+  if (!Array.isArray(list)) return list;
+  list.forEach((effect) => {
+    if (!effect || !Object.prototype.hasOwnProperty.call(effect, 'BUS')) return;
+    const bus = Number(effect.BUS);
+    if (BUS_VALUES.includes(bus)) {
+      effect.BUS = bus;
+    } else {
+      delete effect.BUS;
+    }
+  });
+  return list;
+}
+
 // Display name mapping
 export function getEffectDisplayName(effectName) {
   return effectName;

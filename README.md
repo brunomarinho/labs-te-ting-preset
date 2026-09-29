@@ -13,6 +13,7 @@ Create, edit, and export custom effect chains and modulation settings without us
 - **Live Hardware Connection** - Connect to your Ting via Web Serial to tweak parameters and sync presets
 - **Save to Device** - Write presets directly to device config.json
 - **Modulation Settings** - Configure handle, shake, LFO, and trigger
+- **BUS Routing** - Route effects to parallel BUS 1 / BUS 2 paths (written to config.json; not simulated in preview — test on device at low volume)
 - **Import/Export** - Load existing presets or export for use on the device
 - **4 Preset Slots** - Just like the actual device
 - **Keyboard Shortcuts** - Quick access to playback and modulation
@@ -63,7 +64,7 @@ Connects to your Ting via Web Serial and allows parameter tweaking and preset sw
 
 **Live Mode Limitations:**
 - Parameter changes are sent on slider release (not during drag) to prevent device freeze
-- Adding, removing, or reordering effects is disabled - use Emulation mode for structural changes
+- Adding, removing, reordering effects, or changing BUS routing is disabled - use Emulation mode for structural changes
 - Preset slot switching syncs between app and hardware button
 
 ## Usage

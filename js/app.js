@@ -1,6 +1,6 @@
 // Main application entry point
 import { appState, PreviewMode, applyCustomSamplesFromConfig } from './state.js';
-import { createDefaultSampleConfig } from './effects.js';
+import { createDefaultSampleConfig, sanitizeBusValues } from './effects.js';
 import { audioEngine } from './audio-engine.js';
 import { loadState, saveState } from './storage.js';
 import { DEFAULT_PACK } from './default-preset.js';
@@ -24,7 +24,7 @@ function applyConfigToState(config) {
   (config.presets || []).forEach((preset) => {
     const pos = preset.pos ?? appState.presets.findIndex(p => p === null);
     if (pos >= 0 && pos < 4) {
-      const list = preset.list || [];
+      const list = sanitizeBusValues(preset.list || []);
       if (!list.some(e => e.effect === 'SAMPLE')) {
         list.push(createDefaultSampleConfig());
       }

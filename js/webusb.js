@@ -2,6 +2,8 @@
 // Communicates with MicroPython REPL over USB serial
 // Uses Web Serial API (better CDC ACM support than WebUSB)
 
+import { sanitizeBusValues } from './effects.js';
+
 const TING_VENDOR_ID = 0x2367;
 const TING_PRODUCT_ID = 0x0620;
 
@@ -391,6 +393,13 @@ export class TingUSB {
   // Set effect parameter in real-time
   // Clamps value to valid range before sending to prevent glitches
   async setParam(slot, row, param, value) {
+    // BUS is structural, not a live parameter: fx.param(..., "BUS", n) freezes the
+    // device (verified on fw 1.0.8). BUS changes only reach it via config.json.
+    if (param === 'BUS') {
+      console.warn('[WebSerial] Refusing to send BUS via fx.param');
+      return false;
+    }
+
     // Ensure value is a valid number
     const numValue = parseFloat(value);
     if (isNaN(numValue)) {
@@ -516,9 +525,8 @@ export class TingUSB {
   }
 
   // Select/switch to a specific FX slot on the device
-  // LED behavior: ui.leds(slot, 1) turns on the LED for the slot.
-  // The device automatically turns off the previous LED when a new preset is loaded,
-  // so we only need to explicitly turn on the new slot's LED.
+  // LED behavior: ui.leds(fx_pos, sam_pos) redraws both LED columns for the
+  // given preset and sample slot (verified on fw 1.0.8).
   async selectSlot(slot) {
     // Import teenage module first
     await this.sendCommand('import teenage', 100);
@@ -530,9 +538,9 @@ export class TingUSB {
     // Load the preset
     await this.loadPreset(slot);
 
-    // Update LED - just turn on the selected one
-    // Device handles turning off previous LED automatically
-    await this.sendCommand(`ui.leds(${slot}, 1)`, 100);
+    // Update LEDs: ui.leds(fx_pos, sam_pos) sets both columns (orange = preset,
+    // white = sample slot), so keep the device's current sample position
+    await this.sendCommand(`ui.leds(${slot}, teenage.sam_pos)`, 100);
 
     return true;
   }
@@ -601,16 +609,20 @@ export class TingUSB {
         continue;
       }
 
-      // Parse effect row header: "0 [ 8 HIGHPASS ]"
-      const effectMatch = trimmed.match(/^(\d+)\s*\[\s*(\d+)\s+(\w+)\s*\]$/);
+      // Parse effect row header: "0 [ 8 HIGHPASS ]", or "0 [ 4 DIST ] -> 1" when on a BUS
+      const effectMatch = trimmed.match(/^(\d+)\s*\[\s*(\d+)\s+(\w+)\s*\](?:\s*->\s*(\d+))?$/);
       if (effectMatch) {
         currentSection = 'effects';
-        const [, rowStr, typeIdStr, effectName] = effectMatch;
+        const [, rowStr, typeIdStr, effectName, busStr] = effectMatch;
         currentEffect = {
           effect: effectName,
           _typeId: parseInt(typeIdStr),
           _row: parseInt(rowStr)
         };
+        if (busStr !== undefined) {
+          currentEffect.BUS = parseInt(busStr);
+          sanitizeBusValues([currentEffect]);
+        }
         preset.list.push(currentEffect);
         continue;
       }
