@@ -8,3 +8,5 @@ CLAUDE.md
 node_modules/
 .superpowers/
 .gstack/
+# Local coding-agent permissions (can contain secrets from approved commands)
+.claude/settings.local.json
